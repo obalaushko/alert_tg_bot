@@ -1,8 +1,8 @@
-import { validateEnvs } from './validateEnvs';
-import { runBot } from './src/bot';
+import { validateEnvs } from './validateEnvs.js';
+import { runBot } from './bot/index.js';
 import * as dotenv from 'dotenv';
-import { LOGGER } from './src/logger';
-import { connectDb } from './src/mongodb';
+import { LOGGER } from './logger/index.js';
+import { connectDb } from './mongodb/index.js';
 dotenv.config();
 
 const ENVS = process.env;

@@ -4,10 +4,7 @@ import {
     type ConversationFlavor,
 } from '@grammyjs/conversations';
 
-interface SessionData {
-    itemLevel: string;
-    isDEGANft: boolean;
-}
+interface SessionData {}
 export type SessionContext = Context & SessionFlavor<SessionData>;
 export type BotContext = SessionContext & ConversationFlavor;
 export type ConverstaionContext = Conversation<BotContext>;

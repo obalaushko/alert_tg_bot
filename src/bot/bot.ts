@@ -4,18 +4,22 @@ import { limit } from '@grammyjs/ratelimiter';
 import { hydrateReply } from '@grammyjs/parse-mode';
 import type { ParseModeFlavor } from '@grammyjs/parse-mode';
 
-import { globalConfig, groupConfig, outConfig } from './limitsConfig';
-import { BotContext } from './types';
-import { COMMANDS } from './commands';
+import { globalConfig, groupConfig, outConfig } from './limitsConfig.js';
+import { BotContext } from './types/index.js';
+import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
 import { conversations } from '@grammyjs/conversations';
-import { LOGGER } from '../logger';
+import { LOGGER } from '../logger/index.js';
 
 dotenv.config();
 
 //Env vars
-const BOT_TOKEN = process.env.BOT_TOKEN || '';
+const mode = process.env.NODE_ENV || 'development';
+const BOT_TOKEN =
+    mode === 'production'
+        ? process.env.PRODUCTION_BOT_TOKEN || ''
+        : process.env.DEVELOPMENT_BOT_TOKEN || '';
 
 //BOT CONFIG
 const bot = new Bot<ParseModeFlavor<BotContext>>(BOT_TOKEN);
@@ -62,19 +66,9 @@ bot.use(conversations());
 
 //START COMMAND
 bot.command('start', async (ctx) => {
-    await ctx.conversation.enter('startConversation');
+    await ctx.reply("Hi")
 });
 
-//DAVINCI COMMAND
-bot.command('davinci', async (ctx) => {
-    await ctx.conversation.enter('davinciConverstaion');
-});
-
-// Always exit any conversation upon /cancel
-bot.command('cancel', async (ctx) => {
-    await ctx.conversation.exit();
-    await ctx.reply('Leaving...');
-});
 
 //CRASH HANDLER
 bot.catch((err) => {

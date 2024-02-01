@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es2022",
-        "module": "ES2022",
+        "target": "ESNext",
+        "module": "ESNext",
         "outDir": "./dist",
         "resolveJsonModule": true,
         "allowJs": true,
@@ -12,20 +12,19 @@
         "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
         "isolatedModules": true,
+        "declaration": true,
         "moduleResolution": "node",
         "lib": ["ES2022", "dom", "es6", "es5"],
         "types": [
-            "node",
-            "@wdio/globals/types",
-            "@wdio/devtools-service",
-            "jest"
+            "node"
         ]
     },
-    "include": ["**/*.ts"],
-    "exclude": ["node_modules"],
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"],
     "ts-node": {
         "esm": true,
         "experimentalSpecifierResolution": "node"
+        // "require": ["tsconfig-paths/register"]
     },
     "lib": ["esnext"]
 }
