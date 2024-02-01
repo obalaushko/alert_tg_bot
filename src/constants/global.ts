@@ -1,3 +1,8 @@
+export const ROLES = {
+    Admin: 'admin',
+    User: 'user',
+};
+
 export const BOT_RIGHTS = {
     is_anonymous: true,
     can_manage_chat: true,

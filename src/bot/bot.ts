@@ -1,7 +1,7 @@
 import { Bot, GrammyError, HttpError, session } from 'grammy';
 import { apiThrottler } from '@grammyjs/transformer-throttler';
 import { limit } from '@grammyjs/ratelimiter';
-import { hydrateReply } from '@grammyjs/parse-mode';
+import { hydrateReply, parseMode } from '@grammyjs/parse-mode';
 import type { ParseModeFlavor } from '@grammyjs/parse-mode';
 
 import { globalConfig, groupConfig, outConfig } from './limitsConfig.js';
@@ -9,8 +9,8 @@ import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
-import { conversations } from '@grammyjs/conversations';
 import { LOGGER } from '../logger/index.js';
+import { BOT_RIGHTS } from '../constants/global.js';
 
 dotenv.config();
 
@@ -32,14 +32,20 @@ const throttler = apiThrottler({
 bot.api.setMyCommands(COMMANDS);
 bot.use(hydrateReply);
 bot.api.config.use(throttler);
-//bot.api.config.use(parseMode('')); // Sets default parse_mode for ctx.reply
+bot.api.config.use(parseMode('HTML')); // Sets default parse_mode for ctx.reply
+bot.api.setMyDefaultAdministratorRights({
+    // https://core.telegram.org/bots/api#chatadministratorrights
+    rights: BOT_RIGHTS,
+});
 
+// Session
 bot.use(
     session({
-        initial() {
-            // return empty object for now
-            return {};
-        },
+        initial: () => ({
+            config: {
+                test: '1',
+            },
+        }),
     })
 );
 
@@ -61,14 +67,14 @@ bot.use(
     })
 );
 
-//Inject conversations
-bot.use(conversations());
+export const privateChat = bot.chatType('private');
+export const groupChat = bot.chatType(['group', 'supergroup']);
 
 //START COMMAND
 bot.command('start', async (ctx) => {
-    await ctx.reply("Hi")
+    await ctx.reply('Hi');
+    console.log(ctx.session.config)
 });
-
 
 //CRASH HANDLER
 bot.catch((err) => {
