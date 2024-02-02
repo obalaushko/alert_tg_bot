@@ -24,11 +24,17 @@ function findProjectRoot(currentDir: string): string {
 }
 
 function readEnvironmentFile(envPath: string): string[] {
-    return fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf-8').split('\n') : [];
+    return fs.existsSync(envPath)
+        ? fs.readFileSync(envPath, 'utf-8').split('\n')
+        : [];
 }
 
-function updateOrInsertEnvVariable(lines: string[], variable: string, value: string): void {
-    const index = lines.findIndex(line => line.startsWith(`${variable}=`));
+function updateOrInsertEnvVariable(
+    lines: string[],
+    variable: string,
+    value: string
+): void {
+    const index = lines.findIndex((line) => line.startsWith(`${variable}=`));
     if (index !== -1) {
         lines[index] = `${variable}=${value}`;
     } else {
@@ -40,69 +46,120 @@ function writeEnvironmentFile(envPath: string, lines: string[]): void {
     fs.writeFileSync(envPath, lines.join('\n'));
 }
 
-function installNpmDependencies(): void {
+function installNpmDependencies(): Promise<void> {
     console.log('Встановлюємо npm залежності...');
-    exec('npm install', (error, stdout, stderr) => {
-        if (error) {
-            console.log(`Помилка при встановленні npm залежностей: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.log(`Стандартна помилка: ${stderr}`);
-            return;
-        }
-        console.log(`Результат: ${stdout}`);
+    return new Promise((resolve) => {
+        exec('npm install', (error, stdout, stderr) => {
+            if (error) {
+                console.log(
+                    `Помилка при встановленні npm залежностей: ${error.message}`
+                );
+            } else if (stderr) {
+                console.log(`Стандартна помилка: ${stderr}`);
+            } else {
+                console.log(`Результат: ${stdout}`);
+            }
+            resolve();
+        });
     });
 }
 
-console.log(`\x1b[35mЦей скрипт допоможе вам налаштувати телаграм бот.\x1b[0m`);
+console.log(`\x1b[35mЦей скрипт допоможе вам налаштувати телеграм бот.\x1b[0m`);
 
 const currentDir = findProjectRoot(__dirname);
 const root = currentDir;
 const envPath = path.join(root, '.env');
 const readmeMD = path.join(root, 'README.md');
 
-rl.question('Чи хочете ви оновити конфігурацію оточення? (yes/no): ', (answer: string) => {
-    if (answer.toLowerCase() === 'yes') {
-        console.log(`Як дізнатися ADMIN_ID та GROUP_ID читайте в \x1b[34m${readmeMD}\x1b[0m`);
-        rl.question('Введіть ADMIN_ID: ', (adminId: string) => {
-            rl.question('Введіть GROUP_ID: ', (groupId: string) => {
-                rl.question('Введіть MONGO_DB_USER: ', (mongoDbUser: string) => {
-                    rl.question('Введіть MONGO_DB_PASSWORD: ', (mongoDbPassword: string) => {
-                        rl.question('Введіть MONGO_DB_HOST: ', (mongoDbHost: string) => {
-                            rl.question('Введіть PRODUCTION_BOT_TOKEN: ', (productionBotToken: string) => {
-                                const envLines = readEnvironmentFile(envPath);
-
-                                updateOrInsertEnvVariable(envLines, 'ADMIN_ID', adminId);
-                                updateOrInsertEnvVariable(envLines, 'GROUP_ID', groupId);
-                                updateOrInsertEnvVariable(envLines, 'MONGO_DB_USER', mongoDbUser);
-                                updateOrInsertEnvVariable(envLines, 'MONGO_DB_PASSWORD', mongoDbPassword);
-                                updateOrInsertEnvVariable(envLines, 'MONGO_DB_HOST', mongoDbHost);
-                                updateOrInsertEnvVariable(envLines, 'PRODUCTION_BOT_TOKEN', productionBotToken);
-
-                                writeEnvironmentFile(envPath, envLines);
-
-                                console.log('Конфігурація оточення успішно оновленна!');
-
-                                rl.question('Чи хочете ви оновити npm залежності? (yes/no): ', (answer: string) => {
-                                    if (answer.toLowerCase() === 'yes') {
-                                        installNpmDependencies();
-                                    }
-                                    rl.close();
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    } else {
-
-        rl.question('Чи хочете ви оновити npm залежності? (yes/no): ', (answer: string) => {
-            if (answer.toLowerCase() === 'yes') {
-                installNpmDependencies();
+async function askQuestionWithDefault(
+    question: string,
+    defaultValue: string
+): Promise<string> {
+    return new Promise((resolve) => {
+        rl.question(
+            `${question} (default: ${defaultValue}): `,
+            (answer: string) => {
+                resolve(answer.trim() === '' ? defaultValue : answer);
             }
-            rl.close();
-        });
+        );
+    });
+}
+
+async function configureEnvironment(): Promise<void> {
+    const answer = await askQuestion(
+        'Чи хочете ви оновити конфігурацію оточення? (yes/no): '
+    );
+
+    if (answer.toLowerCase() === 'yes') {
+        console.log(
+            `Як дізнатися ADMIN_ID та GROUP_ID читайте в \x1b[34m${readmeMD}\x1b[0m`
+        );
+
+        const adminId = await askQuestionWithDefault('Введіть ADMIN_ID', '""');
+        const groupId = await askQuestionWithDefault('Введіть GROUP_ID', '""');
+        const mongoDbUser = await askQuestionWithDefault(
+            'Введіть MONGO_DB_USER',
+            '""'
+        );
+        const mongoDbPassword = await askQuestionWithDefault(
+            'Введіть MONGO_DB_PASSWORD',
+            '""'
+        );
+        const mongoDbHost = await askQuestionWithDefault(
+            'Введіть MONGO_DB_HOST',
+            '""'
+        );
+        const productionBotToken = await askQuestionWithDefault(
+            'Введіть PRODUCTION_BOT_TOKEN',
+            '""'
+        );
+
+        const envLines = readEnvironmentFile(envPath);
+
+        updateOrInsertEnvVariable(envLines, 'ADMIN_ID', adminId);
+        updateOrInsertEnvVariable(envLines, 'GROUP_ID', groupId);
+        updateOrInsertEnvVariable(envLines, 'MONGO_DB_USER', mongoDbUser);
+        updateOrInsertEnvVariable(
+            envLines,
+            'MONGO_DB_PASSWORD',
+            mongoDbPassword
+        );
+        updateOrInsertEnvVariable(envLines, 'MONGO_DB_HOST', mongoDbHost);
+        updateOrInsertEnvVariable(
+            envLines,
+            'PRODUCTION_BOT_TOKEN',
+            productionBotToken
+        );
+
+        writeEnvironmentFile(envPath, envLines);
+
+        console.log('Конфігурацію оточення завершено.');
+
+        const npmAnswer = await askQuestion(
+            'Чи хочете ви встановити npm залежності? (yes/no): '
+        );
+
+        if (npmAnswer.toLowerCase() === 'yes') {
+            await installNpmDependencies();
+        }
+    } else {
+        const npmAnswer = await askQuestion(
+            'Чи хочете ви встановити npm залежності? (yes/no): '
+        );
+
+        if (npmAnswer.toLowerCase() === 'yes') {
+            await installNpmDependencies();
+        }
     }
-});
+
+    rl.close();
+}
+
+function askQuestion(question: string): Promise<string> {
+    return new Promise((resolve) => {
+        rl.question(question, resolve);
+    });
+}
+
+// Виклик функції для початку виконання
+configureEnvironment();
