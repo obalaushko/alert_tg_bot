@@ -1,4 +1,3 @@
-import { LOGGER } from '../../logger/index.js';
 import { IUser, UserModel } from '../schemas/user.js';
 
 export const addUser = async ({
@@ -6,9 +5,10 @@ export const addUser = async ({
     username,
     role,
     firstName,
+    groupLink,
 }: Pick<
     IUser,
-    'userId' | 'username' | 'role' | 'firstName'
+    'userId' | 'username' | 'role' | 'firstName' | 'groupLink'
 >): Promise<IUser | null> => {
     try {
         const user = await getUserById(userId);
@@ -21,21 +21,22 @@ export const addUser = async ({
             username,
             role,
             firstName,
+            groupLink
         });
 
         const savedUser = await newUser.save();
 
         if (savedUser?.id) {
-            LOGGER.info('[addUser][success]', { metadata: { savedUser } });
+            console.log('[addUser][success]', { metadata: { savedUser } });
         } else {
-            LOGGER.error('[addUser][error]', {
+            console.error('[addUser][error]', {
                 metadata: { error: 'User not saved' },
             });
         }
 
         return savedUser;
     } catch (error: any) {
-        LOGGER.error('[addUser][error]', {
+        console.error('[addUser][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -51,7 +52,7 @@ export const getUserById = async (id: number): Promise<IUser | null> => {
             return null;
         }
     } catch (error: any) {
-        LOGGER.error('[getUserById][error]', {
+        console.error('[getUserById][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -64,7 +65,7 @@ export const getAllUsers = async (): Promise<IUser[] | null> => {
 
         return users;
     } catch (error: any) {
-        LOGGER.error('[getAllUsers][error]', {
+        console.error('[getAllUsers][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;

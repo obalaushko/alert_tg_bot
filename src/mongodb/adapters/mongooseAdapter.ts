@@ -28,8 +28,3 @@ export class MongooseAdapter {
     }
 }
 
-// const bot = new Bot<Context & SessionFlavor<{}>>('YOUR_BOT_TOKEN');
-// bot.use(session({ initial: () => ({}), storage: new MongooseAdapter() }));
-
-// bot.command('start', (ctx) => ctx.reply('Hello, world!'));
-// bot.start();

@@ -17,10 +17,9 @@ import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
-import { LOGGER } from '../logger/index.js';
 import { BOT_RIGHTS } from '../constants/global.js';
 import { mainMenu } from './menu/start.menu.js';
-import { env } from 'process';
+import { addGroup } from '../mongodb/operations/groups.js';
 
 dotenv.config();
 
@@ -65,7 +64,11 @@ bot.use(
 
         // This is called when the limit is exceeded.
         onLimitExceeded: async (ctx) => {
-            await ctx.reply('Please refrain from sending too many requests!');
+            if (ctx.chat?.type === 'private') {
+                await ctx.reply(
+                    'Please refrain from sending too many requests!'
+                );
+            }
         },
 
         // Note that the key should be a number in string format such as "123456789".
@@ -89,6 +92,7 @@ bot.command('start', async (ctx) => {
     const { user } = await ctx.getAuthor();
     if (user.is_bot) return;
     try {
+        console.log(ctx.chat.id);
         const chatMember = await ctx.chatMembers.getChatMember();
         console.log(chatMember);
     } catch (err) {
@@ -96,28 +100,78 @@ bot.command('start', async (ctx) => {
     }
 });
 
+groupChat.on('message:new_chat_members:is_bot', async (ctx) => {
+    try {
+        const botInfo = await bot.api.getMe();
+        const chatInfo = await ctx.getChat();
+        console.log('Chat info', chatInfo);
+
+        console.log('Bot info', botInfo);
+
+        // find user with ADMIN_ID
+        try {
+            const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
+            const adminUser = await ctx.getChatMember(ADMIN_ID);
+
+            console.log('Admin user info', adminUser);
+
+            if (adminUser.status === 'creator') {
+                // save group to DB
+                if ('title' in chatInfo) {
+                    await addGroup({
+                        groupId: chatInfo.id,
+                        title: chatInfo.title,
+                        type: chatInfo.type,
+                    });
+                }
+            } else {
+                // remove bot from group
+                try {
+                    if (chatInfo.type === 'supergroup') {
+                        await bot.api.unbanChatMember(chatInfo.id, botInfo.id);
+                    } else {
+                        await bot.api.banChatMember(chatInfo.id, botInfo.id);
+                    }
+                    console.log('Bot leave the group!');
+                } catch (err) {
+                    console.error('Error remove bot', err);
+                }
+            }
+        } catch (err) {
+            console.error('Error find admin', err);
+        }
+    } catch (err) {
+        console.error('Error in message:new_chat_members:is_bot', err);
+    }
+});
+
+groupChat.command('remove', async (ctx) => {
+    const { id } = await bot.api.getMe();
+
+    await bot.api.unbanChatMember(-1001992031620, id);
+});
 
 //CRASH HANDLER
 bot.catch((err) => {
     const ctx = err.ctx;
-    LOGGER.error(
+    console.error(
         `[bot-catch][Error while handling update ${ctx.update.update_id}]`,
         { metadata: err.error }
     );
     const e = err.error;
 
     if (e instanceof GrammyError) {
-        LOGGER.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
+        console.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
             metadata: e.message,
             stack: e.stack,
         });
     } else if (e instanceof HttpError) {
-        LOGGER.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
+        console.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
             metadata: e.error,
             stack: e.stack,
         });
     } else {
-        LOGGER.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
+        console.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
             metadata: e,
         });
     }
