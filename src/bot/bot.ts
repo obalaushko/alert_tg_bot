@@ -1,8 +1,16 @@
-import { Bot, GrammyError, HttpError, session } from 'grammy';
+import {
+    Bot,
+    GrammyError,
+    HttpError,
+    MemorySessionStorage,
+    session,
+} from 'grammy';
 import { apiThrottler } from '@grammyjs/transformer-throttler';
 import { limit } from '@grammyjs/ratelimiter';
 import { hydrateReply, parseMode } from '@grammyjs/parse-mode';
 import type { ParseModeFlavor } from '@grammyjs/parse-mode';
+import { chatMembers } from '@grammyjs/chat-members';
+import { type ChatMember } from 'grammy/types';
 
 import { globalConfig, groupConfig, outConfig } from './limitsConfig.js';
 import { BotContext } from './types/index.js';
@@ -11,6 +19,8 @@ import * as dotenv from 'dotenv';
 
 import { LOGGER } from '../logger/index.js';
 import { BOT_RIGHTS } from '../constants/global.js';
+import { mainMenu } from './menu/start.menu.js';
+import { env } from 'process';
 
 dotenv.config();
 
@@ -23,13 +33,16 @@ const BOT_TOKEN =
 
 //BOT CONFIG
 const bot = new Bot<ParseModeFlavor<BotContext>>(BOT_TOKEN);
+
 const throttler = apiThrottler({
     global: globalConfig,
     group: groupConfig,
     out: outConfig,
 });
 
-bot.api.setMyCommands(COMMANDS);
+bot.api.setMyCommands([], { scope: { type: 'all_group_chats' } });
+bot.api.setMyCommands(COMMANDS, { scope: { type: 'all_private_chats' } });
+
 bot.use(hydrateReply);
 bot.api.config.use(throttler);
 bot.api.config.use(parseMode('HTML')); // Sets default parse_mode for ctx.reply
@@ -38,14 +51,9 @@ bot.api.setMyDefaultAdministratorRights({
     rights: BOT_RIGHTS,
 });
 
-// Session
 bot.use(
     session({
-        initial: () => ({
-            config: {
-                test: '1',
-            },
-        }),
+        initial: () => ({}),
     })
 );
 
@@ -67,14 +75,27 @@ bot.use(
     })
 );
 
+bot.use(mainMenu);
+
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);
 
+// check group and update data
+const adapter = new MemorySessionStorage<ChatMember>();
+bot.use(chatMembers(adapter));
+
 //START COMMAND
 bot.command('start', async (ctx) => {
-    await ctx.reply('Hi');
-    console.log(ctx.session.config)
+    const { user } = await ctx.getAuthor();
+    if (user.is_bot) return;
+    try {
+        const chatMember = await ctx.chatMembers.getChatMember();
+        console.log(chatMember);
+    } catch (err) {
+        console.error(err);
+    }
 });
+
 
 //CRASH HANDLER
 bot.catch((err) => {

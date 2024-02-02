@@ -33,6 +33,7 @@
         "tsconfig-paths": "^4.2.0"
     },
     "dependencies": {
+        "@grammyjs/chat-members": "^1.0.12",
         "@grammyjs/conversations": "^1.1.2",
         "@grammyjs/menu": "^1.2.1",
         "@grammyjs/parse-mode": "^1.8.1",
