@@ -1,0 +1,16 @@
+digraph G {
+    rankdir=TB;
+    node [shape=box, style=filled, color=lightblue];
+    edge [color=black];
+
+    start [label="1. Конфігурація бота"];
+    join_group [label="2. Додавання бота до групи"];
+    record_data [label="3. Бот записує дані групи"];
+    setup_bot [label="4. Налаштування бота"];
+    search_message [label="5. Бот шукає повідомлення з відповідним тегом"];
+
+    start -> join_group;
+    join_group -> record_data;
+    record_data -> setup_bot;
+    setup_bot -> search_message;
+}

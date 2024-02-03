@@ -5,24 +5,25 @@ import {
     MemorySessionStorage,
     session,
 } from 'grammy';
-import { apiThrottler } from '@grammyjs/transformer-throttler';
+// import { apiThrottler } from '@grammyjs/transformer-throttler';
 import { limit } from '@grammyjs/ratelimiter';
 import { hydrateReply, parseMode } from '@grammyjs/parse-mode';
 import type { ParseModeFlavor } from '@grammyjs/parse-mode';
 import { chatMembers } from '@grammyjs/chat-members';
 import { type ChatMember } from 'grammy/types';
 
-import { globalConfig, groupConfig, outConfig } from './limitsConfig.js';
+// import { globalConfig, groupConfig, outConfig } from './limitsConfig.js';
 import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
 import { BOT_RIGHTS, ROLES } from '../constants/global.js';
 import { mainMenu } from './menu/start.menu.js';
-import { addGroup } from '../mongodb/operations/groups.js';
-import { findUserInGroup } from './helpers/user.helper.js';
-import { readUserFile } from '../mock/index.js';
-import { addUser, addUsers } from '../mongodb/operations/users.js';
+import { joinBotToTGGroup } from './chats/group/joinToGroup.js';
+import { MSG } from '../constants/messages.js';
+import { getUserById } from '../mongodb/operations/users.js';
+import { conversations, createConversation } from '@grammyjs/conversations';
+import { createTagConversations } from './conversations/createTag.conversations.js';
 
 dotenv.config();
 
@@ -36,17 +37,17 @@ const BOT_TOKEN =
 //BOT CONFIG
 const bot = new Bot<ParseModeFlavor<BotContext>>(BOT_TOKEN);
 
-const throttler = apiThrottler({
-    global: globalConfig,
-    group: groupConfig,
-    out: outConfig,
-});
+// const throttler = apiThrottler({
+//     global: globalConfig,
+//     group: groupConfig,
+//     out: outConfig,
+// });
 
 bot.api.setMyCommands([], { scope: { type: 'all_group_chats' } });
 bot.api.setMyCommands(COMMANDS, { scope: { type: 'all_private_chats' } });
 
 bot.use(hydrateReply);
-bot.api.config.use(throttler);
+// bot.api.config.use(throttler);
 bot.api.config.use(parseMode('HTML')); // Sets default parse_mode for ctx.reply
 bot.api.setMyDefaultAdministratorRights({
     // https://core.telegram.org/bots/api#chatadministratorrights
@@ -83,6 +84,10 @@ bot.use(
 
 bot.use(mainMenu);
 
+//Inject conversations
+bot.use(conversations());
+bot.use(createConversation(createTagConversations));
+
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);
 
@@ -92,79 +97,25 @@ bot.use(chatMembers(adapter));
 
 //START COMMAND
 bot.command('start', async (ctx) => {
-    const { user } = await ctx.getAuthor();
-    if (user.is_bot) return;
+    const {
+        user: { id, is_bot, first_name },
+    } = await ctx.getAuthor();
+    if (is_bot) return;
     try {
-        console.log(ctx.chat.id);
-        const chatMember = await ctx.chatMembers.getChatMember();
-        console.log(chatMember);
+        const user = await getUserById(id);
+        if (user && user.role !== ROLES.User) {
+            await ctx.reply(MSG.menu.text.start, {
+                reply_markup: mainMenu,
+            });
+        } else {
+            console.log('User trying to talk with bot', first_name);
+        }
     } catch (err) {
         console.error(err);
     }
 });
 
-groupChat.on('message:new_chat_members:is_bot', async (ctx) => {
-    try {
-        const botInfo = await bot.api.getMe();
-        const chatInfo = await ctx.getChat();
-        console.log('Chat info', chatInfo);
-
-        console.log('Bot info', botInfo);
-
-        // find user with ADMIN_ID
-        try {
-            const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
-            const adminUser = await ctx.getChatMember(ADMIN_ID);
-
-            console.log('Admin user info', adminUser);
-
-            if (adminUser.status === 'creator') {
-                // save group to DB
-                if ('title' in chatInfo) {
-                    const newGroup = await addGroup({
-                        groupId: chatInfo.id,
-                        title: chatInfo.title,
-                        type: chatInfo.type,
-                    });
-                    // add admin first
-                    await addUser({
-                        userId: adminUser.user.id,
-                        username: adminUser.user.username,
-                        firstName: adminUser.user.first_name,
-                        role: ROLES.Creator,
-                        groupLink: newGroup,
-                    });
-                    
-                    const mockData = await readUserFile();
-                    const usersGroup = await findUserInGroup(
-                        chatInfo.id,
-                        botInfo.id,
-                        mockData.users
-                    );
-
-                    // save users to DB
-                    usersGroup && (await addUsers(usersGroup));
-                }
-            } else {
-                // remove bot from group
-                try {
-                    if (chatInfo.type === 'supergroup') {
-                        await bot.api.unbanChatMember(chatInfo.id, botInfo.id);
-                    } else {
-                        await bot.api.banChatMember(chatInfo.id, botInfo.id);
-                    }
-                    console.log('Bot leave the group!');
-                } catch (err) {
-                    console.error('Error remove bot', err);
-                }
-            }
-        } catch (err) {
-            console.error('Error find admin', err);
-        }
-    } catch (err) {
-        console.error('Error in message:new_chat_members:is_bot', err);
-    }
-});
+joinBotToTGGroup();
 
 groupChat.command('remove', async (ctx) => {
     const { id } = await bot.api.getMe();

@@ -1,3 +1,4 @@
+import { ROLES } from '../../constants/global.js';
 import { IUser, UserModel } from '../schemas/user.js';
 
 export const addUser = async ({
@@ -86,6 +87,88 @@ export const getAllUsers = async (): Promise<IUser[] | null> => {
         return users;
     } catch (error: any) {
         console.error('[getAllUsers][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
+export const getAllAdminRoles = async (): Promise<IUser[] | null> => {
+    try {
+        const users = await UserModel.find({ role: ROLES.Admin }).exec();
+
+        return users;
+    } catch (error: any) {
+        console.error('[getAllAdminRoles][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
+export const getAllUserRoles = async (): Promise<IUser[] | null> => {
+    try {
+        const users = await UserModel.find({ role: ROLES.User }).exec();
+
+        return users;
+    } catch (error: any) {
+        console.error('[getAllUserRoles][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
+export const updateUsersToAdmin = async (
+    userIds: number[]
+): Promise<IUser[] | null> => {
+    try {
+        const result = await UserModel.updateMany(
+            { userId: { $in: userIds } },
+            { $set: { role: 'admin' } }
+        ).exec();
+
+        if (result && result.modifiedCount > 0) {
+            const users = await UserModel.find({
+                userId: { $in: userIds },
+            }).exec();
+            return users;
+        } else {
+            console.error('[updateUsersToAdmin][error]', {
+                metadata: { error: 'No users updated' },
+            });
+            return null;
+        }
+    } catch (error: any) {
+        console.error('[updateUsersToAdmin][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
+export const updateUsersToUser = async (
+    userIds: number[]
+): Promise<IUser[] | null> => {
+    try {
+        const result = await UserModel.updateMany(
+            { userId: { $in: userIds } },
+            { $set: { role: 'user' } }
+        ).exec();
+
+        if (result && result.modifiedCount > 0) {
+            const users = await UserModel.find({
+                userId: { $in: userIds },
+            }).exec();
+            return users;
+        } else {
+            console.error('[updateUsersToUser][error]', {
+                metadata: { error: 'No users updated' },
+            });
+            return null;
+        }
+    } catch (error: any) {
+        console.error('[updateUsersToUser][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
