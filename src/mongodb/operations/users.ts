@@ -21,7 +21,7 @@ export const addUser = async ({
             username,
             role,
             firstName,
-            groupLink
+            groupLink,
         });
 
         const savedUser = await newUser.save();
@@ -37,6 +37,26 @@ export const addUser = async ({
         return savedUser;
     } catch (error: any) {
         console.error('[addUser][error]', {
+            metadata: { error: error, stack: error.stack?.toString() },
+        });
+        return null;
+    }
+};
+
+export const addUsers = async (users: IUser[]): Promise<IUser[] | null> => {
+    try {
+        const addedUsers: IUser[] = [];
+
+        for (const user of users) {
+            const addedUser = await addUser(user);
+            if (addedUser) {
+                addedUsers.push(addedUser);
+            }
+        }
+
+        return addedUsers.length > 0 ? addedUsers : null;
+    } catch (error: any) {
+        console.error('[addUsers][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;

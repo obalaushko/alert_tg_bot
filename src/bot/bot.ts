@@ -17,9 +17,12 @@ import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
-import { BOT_RIGHTS } from '../constants/global.js';
+import { BOT_RIGHTS, ROLES } from '../constants/global.js';
 import { mainMenu } from './menu/start.menu.js';
 import { addGroup } from '../mongodb/operations/groups.js';
+import { findUserInGroup } from './helpers/user.helper.js';
+import { readUserFile } from '../mock/index.js';
+import { addUser, addUsers } from '../mongodb/operations/users.js';
 
 dotenv.config();
 
@@ -118,11 +121,29 @@ groupChat.on('message:new_chat_members:is_bot', async (ctx) => {
             if (adminUser.status === 'creator') {
                 // save group to DB
                 if ('title' in chatInfo) {
-                    await addGroup({
+                    const newGroup = await addGroup({
                         groupId: chatInfo.id,
                         title: chatInfo.title,
                         type: chatInfo.type,
                     });
+                    // add admin first
+                    await addUser({
+                        userId: adminUser.user.id,
+                        username: adminUser.user.username,
+                        firstName: adminUser.user.first_name,
+                        role: ROLES.Creator,
+                        groupLink: newGroup,
+                    });
+                    
+                    const mockData = await readUserFile();
+                    const usersGroup = await findUserInGroup(
+                        chatInfo.id,
+                        botInfo.id,
+                        mockData.users
+                    );
+
+                    // save users to DB
+                    usersGroup && (await addUsers(usersGroup));
                 }
             } else {
                 // remove bot from group
