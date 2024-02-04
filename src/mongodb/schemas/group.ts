@@ -1,15 +1,17 @@
 import { Document, Schema, SchemaTypes, model, Types } from 'mongoose';
 import { IUser } from './user.js';
 
+export interface ITag {
+    id?: Types.ObjectId;
+    title: string;
+    tag: string;
+    members?: IUser[] | null;
+}
 export interface IGroup extends Document {
     groupId: number;
     title: string;
     type?: string;
-    tags?: {
-        title: string;
-        tag: string;
-        members?: Types.ObjectId[] | IUser[] | null;
-    }[];
+    tags?: ITag[];
     membersCount?: number;
 }
 
@@ -27,8 +29,17 @@ export const groupSchema: Schema = new Schema<IGroup>({
     },
     tags: [
         {
+            id: {
+                type: SchemaTypes.ObjectId,
+                default: () => new Types.ObjectId(),
+            },
             title: String,
-            tag: String,
+            tag: {
+                type: String,
+                unique: true,
+                minlength: 3,
+                maxlength: 20
+            },
             members: [
                 {
                     type: SchemaTypes.ObjectId,

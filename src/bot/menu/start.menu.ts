@@ -2,6 +2,7 @@ import { Menu } from '@grammyjs/menu';
 import { MSG } from '../../constants/messages.js';
 import { setupAdminMenu } from './admin.menu.js';
 import { setupTagMenu } from './tags.menu.js';
+import { addUsersToTagMenu } from './addUsertsToTag.menu.js';
 
 export const mainMenu = new Menu('mainMenu')
     .text(MSG.menu.buttons.setupAdmins, async (ctx) => {
@@ -21,11 +22,12 @@ export const mainMenu = new Menu('mainMenu')
         } = await ctx.getAuthor();
         try {
             ctx.menu.nav('setupTagMenu');
-            await ctx.editMessageText(MSG.menu.text.setupTag); 
+            await ctx.editMessageText(MSG.menu.text.chooseGroupToUpdate); 
         } catch (err) {
             console.error('Error setupTags', err)
         }
     });
 
 mainMenu.register(setupAdminMenu)
-mainMenu.register(setupTagMenu)
+mainMenu.register(addUsersToTagMenu as any)
+mainMenu.register(setupTagMenu as any)

@@ -34,21 +34,20 @@ const addAdminMenu = new Menu('addAdminMenu')
                     }
                 );
                 if (index % 2) range.row();
-
-                range.row();
-                checked.size &&
-                    range.text(MSG.menu.buttons.update, async (ctx) => {
-                        const userIds = [...checked];
-
-                        const updateUsers = await updateUsersToAdmin(userIds);
-
-                        checked.clear();
-                        if (updateUsers?.length) {
-                            console.log('Update Users', updateUsers);
-                        }
-                        ctx.menu.back();
-                    });
             });
+            range.row();
+            checked.size &&
+                range.text(MSG.menu.buttons.update, async (ctx) => {
+                    const userIds = [...checked];
+
+                    const updateUsers = await updateUsersToAdmin(userIds);
+
+                    checked.clear();
+                    if (updateUsers?.length) {
+                        console.log('Update Users', updateUsers);
+                    }
+                    ctx.menu.back();
+                });
         }
 
         return range;
@@ -86,21 +85,20 @@ const removeAdminMenu = new Menu('removeAdminMenu')
                     }
                 );
                 if (index % 2) range.row();
-
-                range.row();
-                checked.size &&
-                    range.text(MSG.menu.buttons.update, async (ctx) => {
-                        const userIds = [...checked];
-
-                        const updateUsers = await updateUsersToUser(userIds);
-
-                        checked.clear();
-                        if (updateUsers?.length) {
-                            console.log('Update Users', updateUsers);
-                        }
-                        ctx.menu.back();
-                    });
             });
+            range.row();
+            checked.size &&
+                range.text(MSG.menu.buttons.update, async (ctx) => {
+                    const userIds = [...checked];
+
+                    const updateUsers = await updateUsersToUser(userIds);
+
+                    checked.clear();
+                    if (updateUsers?.length) {
+                        console.log('Update Users', updateUsers);
+                    }
+                    ctx.menu.back();
+                });
         }
 
         return range;

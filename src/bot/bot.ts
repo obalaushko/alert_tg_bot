@@ -17,13 +17,17 @@ import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
-import { BOT_RIGHTS, ROLES } from '../constants/global.js';
+import { BOT_RIGHTS } from '../constants/global.js';
 import { mainMenu } from './menu/start.menu.js';
 import { joinBotToTGGroup } from './chats/group/joinToGroup.js';
-import { MSG } from '../constants/messages.js';
-import { getUserById } from '../mongodb/operations/users.js';
 import { conversations, createConversation } from '@grammyjs/conversations';
 import { createTagConversations } from './conversations/createTag.conversations.js';
+import { startBotDialog } from './chats/private/start.bot.js';
+import { tagsSetupHears } from './chats/private/tagsSetup.hears.js';
+import { addUser } from '../mongodb/operations/users.js';
+import { getGroupById } from '../mongodb/operations/groups.js';
+import { addUsersToTagMenu } from './menu/addUsertsToTag.menu.js';
+import { GroupModel } from '../mongodb/schemas/group.js';
 
 dotenv.config();
 
@@ -83,6 +87,7 @@ bot.use(
 );
 
 bot.use(mainMenu);
+// bot.use(addUsersToTagMenu);
 
 //Inject conversations
 bot.use(conversations());
@@ -96,26 +101,21 @@ const adapter = new MemorySessionStorage<ChatMember>();
 bot.use(chatMembers(adapter));
 
 //START COMMAND
-bot.command('start', async (ctx) => {
-    const {
-        user: { id, is_bot, first_name },
-    } = await ctx.getAuthor();
-    if (is_bot) return;
-    try {
-        const user = await getUserById(id);
-        if (user && user.role !== ROLES.User) {
-            await ctx.reply(MSG.menu.text.start, {
-                reply_markup: mainMenu,
-            });
-        } else {
-            console.log('User trying to talk with bot', first_name);
-        }
-    } catch (err) {
-        console.error(err);
-    }
+privateChat.command('start', async (ctx) => {
+    await startBotDialog(ctx);
 });
 
 joinBotToTGGroup();
+tagsSetupHears();
+// privateChat.command('create', async (ctx) => {
+//     const group = await getGroupById(-1001992031620)
+//     await addUser({
+//         userId: 111,
+//         firstName: 'test',
+//         groupLink: group
+//     })
+// })
+
 
 groupChat.command('remove', async (ctx) => {
     const { id } = await bot.api.getMe();

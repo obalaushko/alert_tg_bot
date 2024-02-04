@@ -80,6 +80,24 @@ export const getUserById = async (id: number): Promise<IUser | null> => {
     }
 };
 
+export const getUsersByIds = async (
+    ids: number[]
+): Promise<IUser[] | null> => {
+    try {
+        const users = await UserModel.find({ userId: { $in: ids } }).exec();
+        if (users.length > 0) {
+            return users;
+        } else {
+            return null;
+        }
+    } catch (error: any) {
+        console.error('[getUsersByIds][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
 export const getAllUsers = async (): Promise<IUser[] | null> => {
     try {
         const users = await UserModel.find().exec();
