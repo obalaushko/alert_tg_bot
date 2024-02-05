@@ -24,6 +24,8 @@ import { conversations, createConversation } from '@grammyjs/conversations';
 import { createTagConversations } from './conversations/createTag.conversations.js';
 import { startBotDialog } from './chats/private/start.bot.js';
 import { tagsSetupHears } from './chats/private/tagsSetup.hears.js';
+import { listenGroup } from './chats/group/listenGroup.js';
+import { simpleJoinBotToTGGroup } from './chats/group/simple.joinToGroup.js';
 
 dotenv.config();
 
@@ -96,13 +98,23 @@ export const groupChat = bot.chatType(['group', 'supergroup']);
 const adapter = new MemorySessionStorage<ChatMember>();
 bot.use(chatMembers(adapter));
 
+
 //START COMMAND
 privateChat.command('start', async (ctx) => {
     await startBotDialog(ctx);
 });
 
-joinBotToTGGroup();
+groupChat.command('remove', async (ctx) => {
+    const { id } = await bot.api.getMe();
+
+    await bot.api.unbanChatMember(-1001992031620, id);
+});
+
+listenGroup();
+// joinBotToTGGroup();
+simpleJoinBotToTGGroup();
 tagsSetupHears();
+
 // privateChat.command('create', async (ctx) => {
 //     const group = await getGroupById(-1001992031620)
 //     await addUser({
@@ -113,11 +125,7 @@ tagsSetupHears();
 // })
 
 
-groupChat.command('remove', async (ctx) => {
-    const { id } = await bot.api.getMe();
 
-    await bot.api.unbanChatMember(-1001992031620, id);
-});
 
 //CRASH HANDLER
 bot.catch((err) => {
