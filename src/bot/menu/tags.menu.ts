@@ -1,8 +1,8 @@
 import { Menu, MenuRange } from '@grammyjs/menu';
 import { MSG } from '../../constants/messages.js';
-import { Keyboard } from 'grammy';
-import { getAllGroups } from '../../mongodb/operations/groups.js';
+import { getAllGroups, getGroupById } from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
+import { setupTagKeyboard } from './keyboards.js';
 
 export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
     .dynamic(async () => {
@@ -18,8 +18,14 @@ export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
                         },
                         async (ctx) => {
                             ctx.session.activeGroupId = group.groupId;
-
-                            await ctx.reply(MSG.menu.text.setupTag, {
+                            await ctx.api.deleteMessage(ctx.chat?.id!, ctx.msg?.message_id!);
+                            const groupInfo = await getGroupById(group.groupId);
+                            if (!groupInfo) {
+                                console.error('Error: GroupInfo is not defined');
+                                return;
+                            }
+                            
+                            await ctx.reply(MSG.menu.text.setupTag(groupInfo), {
                                 reply_markup: setupTagKeyboard,
                             });
                         }
@@ -33,16 +39,7 @@ export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
         }
     })
     .row()
-    .text(MSG.menu.buttons.backToMain, async (ctx) => {
+    .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {
         ctx.menu.back();
         await ctx.editMessageText(MSG.menu.text.start);
     });
-
-export const setupTagKeyboard = new Keyboard()
-    .text(MSG.menu.buttons.createTag)
-    .text(MSG.menu.buttons.updateTag)
-    .text(MSG.menu.buttons.removeTag)
-    .row()
-    .text(MSG.menu.buttons.backToMain)
-    .resized()
-    .oneTime();

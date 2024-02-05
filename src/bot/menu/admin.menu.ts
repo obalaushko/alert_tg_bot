@@ -58,7 +58,7 @@ const addAdminMenu = new Menu('addAdminMenu')
         await ctx.editMessageText(MSG.menu.text.setupAdmin);
         checked.clear();
     })
-    .text(MSG.menu.buttons.backToMain, async (ctx) => {
+    .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {
         ctx.menu.nav('mainMenu');
         await ctx.editMessageText(MSG.menu.text.start);
         checked.clear();
@@ -109,7 +109,7 @@ const removeAdminMenu = new Menu('removeAdminMenu')
         await ctx.editMessageText(MSG.menu.text.setupAdmin);
         checked.clear();
     })
-    .text(MSG.menu.buttons.backToMain, async (ctx) => {
+    .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {
         ctx.menu.nav('mainMenu');
         await ctx.editMessageText(MSG.menu.text.start);
         checked.clear();
@@ -139,7 +139,7 @@ export const setupAdminMenu = new Menu('setupAdminMenu')
         }
     })
     .row()
-    .text(MSG.menu.buttons.backToMain, async (ctx) => {
+    .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {
         ctx.menu.back();
         await ctx.editMessageText(MSG.menu.text.start);
     });

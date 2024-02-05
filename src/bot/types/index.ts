@@ -4,11 +4,10 @@ import {
     type ConversationFlavor,
 } from '@grammyjs/conversations';
 import { ChatMembersFlavor } from '@grammyjs/chat-members';
-import { Types } from 'mongoose';
 
 interface SessionData {
     activeGroupId: number | null;
-    activeTagId: Types.ObjectId | null;
+    activeTagId: string | null;
 }
 export type SessionContext = Context & SessionFlavor<SessionData>;
 export type BotContext = SessionContext &

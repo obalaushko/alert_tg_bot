@@ -1,10 +1,10 @@
 import { MSG } from '../../constants/messages.js';
 import { addTagToGroup } from '../../mongodb/operations/groups.js';
-import { addUsersToTagMenu } from '../menu/addUsertsToTag.menu.js';
+import { setupTagKeyboard } from '../menu/keyboards.js';
 import { BotContext, ConverstaionContext } from '../types/index.js';
 import { isCancel } from '../utils/utils.js';
 
-export const createTagConversations = async (
+export const createTagConversations = async(
     conversation: ConverstaionContext,
     ctx: BotContext
 ) => {
@@ -25,7 +25,6 @@ export const createTagConversations = async (
         return;
     }
 
-    // Запит на введення самого тегу
     let isValidFormat = false;
     let tag = '';
     await ctx.reply(MSG.conversations.chooseTagName);
@@ -73,16 +72,19 @@ export const createTagConversations = async (
     });
 
     if (addTag) {
+        await ctx.reply(MSG.conversations.tagCreated, {
+            reply_markup: setupTagKeyboard,
+        });
         // Next to add users
-        console.log(addTag);
-        if (!addTag.id) {
-            console.error('Error tag Id not found!');
-            return;
-        }
-        await ctx.reply(MSG.conversations.chooseMemberToAddTag(addTag.title), {
-            reply_markup: addUsersToTagMenu
-        })
-        ctx.session.activeTagId = addTag.id;
+        // if (!addTag.id) {
+        //     console.error('Error tag Id not found!');
+        //     return;
+        // }
+        // ctx.session.activeTagId = addTag.id;
+
+        // await ctx.reply(MSG.conversations.chooseMemberToAddTag(addTag.title), {
+        //     reply_markup: addUsersToTagMenu
+        // })
     }
 
     return;

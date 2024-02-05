@@ -1,8 +1,13 @@
 import { Menu, MenuRange } from '@grammyjs/menu';
 import { getAllUsers, getUsersByIds } from '../../mongodb/operations/users.js';
 import { MSG } from '../../constants/messages.js';
-import { addMembersToTag } from '../../mongodb/operations/groups.js';
+import {
+    addMembersToTag,
+    findTagInGroup,
+    removeMemberFromTag,
+} from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
+import { UserModel } from '../../mongodb/schemas/user.js';
 
 const checked = new Set<number>();
 
@@ -10,9 +15,23 @@ const toggleChecked = (id: number) => {
     if (!checked.delete(id)) checked.add(id);
 };
 
-export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
-    .dynamic(async () => {
-        const users = await getAllUsers();
+export const removeUsersFromTagMenu = new Menu<SessionContext>(
+    'removeUsersFromTagMenu'
+)
+    .dynamic(async (ctx) => {
+        const groupId = ctx.session.activeGroupId;
+        const tagId = ctx.session.activeTagId;
+        if (!groupId || !tagId) {
+            console.error('Error: GroupId or TagId is not defined');
+            return new MenuRange<SessionContext>();
+        }
+
+        const tag = await findTagInGroup(groupId, tagId);
+        if (!tag) {
+            console.error('Error: Tag is not defined');
+            return new MenuRange<SessionContext>();
+        }
+        const users = await UserModel.find({ _id: { $in: tag.members } });
 
         const range = new MenuRange<SessionContext>();
 
@@ -40,17 +59,21 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
 
                     const users = await getUsersByIds(userIds);
                     if (!users) return;
-                    const groupId = ctx.session.activeGroupId!;
-                    const tagId = ctx.session.activeTagId!;
-                    const membersToTag = await addMembersToTag({
+
+                    if (!groupId || !tagId) {
+                        console.error('Error: GroupId or TagId is not defined');
+                        return;
+                    }
+
+                    const membersToTag = await removeMemberFromTag({
                         groupId,
                         tagId,
-                        newMembers: users,
+                        memberToRemove: users,
                     });
 
                     checked.clear();
                     if (membersToTag) {
-                        console.log('Add members to tag', membersToTag);
+                        console.log('Remove members from tag', membersToTag);
                     }
                     ctx.menu.nav('mainMenu');
                     await ctx.editMessageText(MSG.menu.text.start);
@@ -60,7 +83,7 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
         return range;
     })
     .row()
-    .text(MSG.menu.buttons.backToMain, async (ctx) => {
+    .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {
         ctx.menu.nav('mainMenu');
         await ctx.editMessageText(MSG.menu.text.start);
         checked.clear();

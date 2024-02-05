@@ -24,10 +24,6 @@ import { conversations, createConversation } from '@grammyjs/conversations';
 import { createTagConversations } from './conversations/createTag.conversations.js';
 import { startBotDialog } from './chats/private/start.bot.js';
 import { tagsSetupHears } from './chats/private/tagsSetup.hears.js';
-import { addUser } from '../mongodb/operations/users.js';
-import { getGroupById } from '../mongodb/operations/groups.js';
-import { addUsersToTagMenu } from './menu/addUsertsToTag.menu.js';
-import { GroupModel } from '../mongodb/schemas/group.js';
 
 dotenv.config();
 
