@@ -2,15 +2,16 @@
     "name": "alert_telegram_bot",
     "version": "1.0.0",
     "description": "Telegram bot (grammY)",
-    "main": "index.js",
+    "main": "src/index.js",
     "type": "module",
     "engines": {
         "node": "20.9.0"
     },
     "scripts": {
-        "start": "NODE_ENV=production node ./dist/index.js",
+        "start": "NODE_ENV=production node ./dist/src/index.js",
         "dev": "NODE_ENV=development nodemon --exec node --loader ts-node/esm ./src/index.ts",
         "build": "tsc",
+        "setup": "node dist/scripts/setup.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
         "lint:check": "eslint .",
@@ -32,6 +33,7 @@
         "tsconfig-paths": "^4.2.0"
     },
     "dependencies": {
+        "@grammyjs/chat-members": "^1.0.12",
         "@grammyjs/conversations": "^1.1.2",
         "@grammyjs/menu": "^1.2.1",
         "@grammyjs/parse-mode": "^1.8.1",
@@ -46,6 +48,7 @@
         "module-alias": "^2.2.3",
         "moment-timezone": "^0.5.43",
         "mongoose": "^7.6.1",
+        "nanoid": "^5.0.5",
         "node-cron": "^3.0.3",
         "typescript": "^5.2.2",
         "winston": "^3.11.0",

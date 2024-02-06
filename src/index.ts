@@ -15,12 +15,12 @@ const runApp = async () => {
                 runBot();
             })
             .catch((error) => {
-                LOGGER.error(`[runApp][Error on connect db]`, {
+                console.error(`[runApp][Error on connect db]`, {
                     metadata: { error: error, stack: error.stack.toString() },
                 });
             });
     } catch (error: any) {
-        LOGGER.error(`[runApp][Error on run app]`, {
+        console.error(`[runApp][Error on run app]`, {
             metadata: { error: error, stack: error.stack.toString() },
         });
     }

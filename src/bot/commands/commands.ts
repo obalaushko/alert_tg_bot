@@ -4,7 +4,5 @@ interface Commands {
 }
 
 export const COMMANDS: Commands[] = [
-    { command: 'start', description: 'Start interacting with the bot' },
-    { command: 'help', description: 'Show help text' },
-    { command: 'cancel', description: 'Cancel converstaion' },
+    { command: 'start', description: 'Start interacting with the bot' }
 ];

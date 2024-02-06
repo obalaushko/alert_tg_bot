@@ -20,16 +20,16 @@ const connectDb = async () => {
             retryWrites: true,
         });
         if (mongoDbConnection.connection.readyState === 1) {
-            LOGGER.info(`[connectDb][DB connected succesfully]`, {
+            console.log(`[connectDb][DB connected succesfully]`, {
                 metadata: '',
                 sendLog: true,
             });
         } else {
-            LOGGER.error(`[connectDb][DB connection failed]`, { metadata: '' });
+            console.error(`[connectDb][DB connection failed]`, { metadata: '' });
         }
     } catch (error: any) {
         // setTimeout(connectDb, 5000);
-        LOGGER.error(`[connectDb][DB connection failed]`, {
+        console.error(`[connectDb][DB connection failed]`, {
             metadata: { error: error, stack: error.stack.toString() },
         });
     }
