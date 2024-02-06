@@ -1,5 +1,5 @@
+import { readUserFile } from "../../../mock/index.js";
 import { ROLES } from "../../../constants/global.js";
-import { readUserFile } from "../../../../mock/index.js";
 import { addGroup } from "../../../mongodb/operations/groups.js";
 import { addUser, addUsers } from "../../../mongodb/operations/users.js";
 import { bot, groupChat } from "../../bot.js";
