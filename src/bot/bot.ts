@@ -25,7 +25,9 @@ import { createTagConversations } from './conversations/createTag.conversations.
 import { startBotDialog } from './chats/private/start.bot.js';
 import { tagsSetupHears } from './chats/private/tagsSetup.hears.js';
 import { listenGroup } from './chats/group/listenGroup.js';
-import { simpleJoinBotToTGGroup } from './chats/group/simple.joinToGroup.js';
+// import { simpleJoinBotToTGGroup } from './chats/group/simple.joinToGroup.js';
+import { MSG } from '../constants/messages.js';
+import { changeTagConversations } from './conversations/changeTag.conversations.js';
 
 dotenv.config();
 
@@ -90,6 +92,7 @@ bot.use(mainMenu);
 //Inject conversations
 bot.use(conversations());
 bot.use(createConversation(createTagConversations));
+bot.use(createConversation(changeTagConversations));
 
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);
@@ -104,16 +107,21 @@ privateChat.command('start', async (ctx) => {
     await startBotDialog(ctx);
 });
 
+privateChat.command("cancel", async (ctx) => {
+    await ctx.conversation.exit();
+    await ctx.reply(MSG.conversations.leaveConversation);
+  });
+
 groupChat.command('remove', async (ctx) => {
     const { id } = await bot.api.getMe();
 
     await bot.api.unbanChatMember(-1001992031620, id);
 });
 
-listenGroup();
-// joinBotToTGGroup();
-simpleJoinBotToTGGroup();
+joinBotToTGGroup();
 tagsSetupHears();
+listenGroup();
+// simpleJoinBotToTGGroup();
 
 // privateChat.command('create', async (ctx) => {
 //     const group = await getGroupById(-1001992031620)

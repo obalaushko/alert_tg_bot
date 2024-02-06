@@ -192,76 +192,64 @@ export const addMembersToTag = async ({
     }
 };
 
-interface RemoveMemberInput {
-    groupId: number;
-    tagId: string;
-    memberToRemove: IUser[];
-}
 
-export const removeMemberFromTag = async ({
+export const removeUsersFromTag = async ({
     groupId,
     tagId,
-    memberToRemove,
-}: RemoveMemberInput): Promise<IGroup | null> => {
+    userIds,
+}: {
+    groupId: IGroup['groupId'];
+    tagId: ITag['id'];
+    userIds: IUser['userId'][];
+}): Promise<IGroup | null> => {
     try {
-        const group = await GroupModel.findOne({
-            groupId,
-        });
-
+        const group = await GroupModel.findOne({ groupId });
         if (!group) {
-            console.error('[removeMemberFromTag][error]', {
+            console.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'Group not found' },
             });
             return null;
         }
 
-        if (!group.tags?.length) return null;
-
-        const tagIndex = group.tags.findIndex((t) => t.id === tagId);
-
-        if (tagIndex === -1) {
-            console.error('[removeMemberFromTag][error]', {
-                metadata: { error: 'Tag not found in the group' },
+        if (!group.tags) {
+            console.error('[removeUsersFromTag][error]', {
+                metadata: { error: 'No tags in the group' },
             });
             return null;
         }
 
-        // const userToRemove = await UserModel.findOne({_id: memberToRemove})
-        // if (!userToRemove) {
-        //     console.error('[removeMemberFromTag][error]', {
-        //         metadata: { error: 'User not found' },
-        //     });
-        //     return null;
-        // }
+        const tag = group.tags.find(tag => tag.id === tagId);
+        if (!tag) {
+            console.error('[removeUsersFromTag][error]', {
+                metadata: { error: 'Tag not found' },
+            });
+            return null;
+        }
 
-        const updatedMembers = group.tags[tagIndex]?.members
-            ? group.tags[tagIndex].members!.filter(async (member) => {
-                  const removeUser = await UserModel.findOne({ _id: member });
-                  if (removeUser) {
-                      memberToRemove.some(
-                          (user) => user.userId !== removeUser.userId
-                      );
-                  } else {
-                      throw new Error('User not found');
-                  }
-              })
-            : [];
+        if (!tag.members) {
+            console.error('[removeUsersFromTag][error]', {
+                metadata: { error: 'No members in the tag' },
+            });
+            return null;
+        }
 
-        const update = {
-            $set: {
-                [`tags.${tagIndex}.members`]: updatedMembers,
-            },
-        };
+        tag.members = tag.members.filter(member => !userIds.includes(member.userId));
 
-        await GroupModel.updateOne({ groupId }, update);
+        const updatedGroup = await group.save();
 
-        console.log('[removeMemberFromTag][success]', {
-            metadata: { groupId, tagId, memberToRemove },
-        });
-
-        return await GroupModel.findOne({ groupId });
+        if (updatedGroup) {
+            console.log('[removeUsersFromTag][success]', {
+                metadata: { updatedGroup },
+            });
+            return updatedGroup;
+        } else {
+            console.error('[removeUsersFromTag][error]', {
+                metadata: { error: 'Group not updated' },
+            });
+            return null;
+        }
     } catch (error: any) {
-        console.error('[removeMemberFromTag][error]', {
+        console.error('[removeUsersFromTag][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -417,7 +405,7 @@ export const editTag = async ({
         }
 
         tag.title = newTitle;
-        tag.tag = newTag;
+        tag.tag = `#${newTag}`;
         await group.save();
 
         console.log('[editTag][success]', {

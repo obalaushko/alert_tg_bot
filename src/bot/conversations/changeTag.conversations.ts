@@ -1,17 +1,16 @@
 import { MSG } from '../../constants/messages.js';
-import { addTagToGroup } from '../../mongodb/operations/groups.js';
+import { editTag } from '../../mongodb/operations/groups.js';
 import { setupTagKeyboard } from '../menu/keyboards.js';
 import { BotContext, ConverstaionContext } from '../types/index.js';
 import { isCancel } from '../utils/utils.js';
 
-export const createTagConversations = async(
+export const changeTagConversations = async (
     conversation: ConverstaionContext,
     ctx: BotContext
 ) => {
     const { user } = await ctx.getAuthor();
-    console.log('[createTagConversations]', user);
+    console.log('[changeTagConversations]', user);
 
-    
     await ctx.reply(MSG.conversations.chooseTagTitle, {
         reply_markup: { remove_keyboard: true },
     });
@@ -21,7 +20,7 @@ export const createTagConversations = async(
     if (isCancel(title || '')) {
         await ctx.reply(MSG.conversations.leaveConversation);
         // await ctx.conversation.exit();
-        console.log(`[createTagConversations] Leave the conversation`);
+        console.log(`[changeTagConversations] Leave the conversation`);
         return;
     }
 
@@ -36,7 +35,7 @@ export const createTagConversations = async(
         if (isCancel(tag || '')) {
             await ctx.reply(MSG.conversations.leaveConversation);
             // await ctx.conversation.exit();
-            console.log(`[createTagConversations] Leave the conversation`);
+            console.log(`[changeTagConversations] Leave the conversation`);
             return;
         }
 
@@ -54,25 +53,26 @@ export const createTagConversations = async(
         }
     }
 
-    console.log(`[createTagConversations] Tag title: ${title}, Tag: ${tag}`);
+    console.log(`[changeTagConversations] Tag title: ${title}, Tag: ${tag}`);
 
     // Add tag to DB
-    const addTag = await conversation.external(async () => {
-        if (ctx.session.activeGroupId) {
-            const newTag = await addTagToGroup({
+    const updateTag = await conversation.external(async () => {
+        if (ctx.session.activeGroupId && ctx.session.activeTagId) {
+            const updateTag = await editTag({
                 groupId: ctx.session.activeGroupId!,
-                tag: tag,
-                tagTitle: title,
+                tagId: ctx.session.activeTagId!,
+                newTag: tag,
+                newTitle: title,
             });
-            
-            return newTag
+
+            return updateTag;
         } else {
             console.error('Error activeGroupId not found!');
         }
     });
 
-    if (addTag) {
-        await ctx.reply(MSG.conversations.tagCreated, {
+    if (updateTag) {
+        await ctx.reply(MSG.conversations.tagUpdated, {
             reply_markup: setupTagKeyboard,
         });
     }

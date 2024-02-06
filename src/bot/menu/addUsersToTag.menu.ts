@@ -1,7 +1,10 @@
 import { Menu, MenuRange } from '@grammyjs/menu';
 import { getAllUsers, getUsersByIds } from '../../mongodb/operations/users.js';
 import { MSG } from '../../constants/messages.js';
-import { addMembersToTag } from '../../mongodb/operations/groups.js';
+import {
+    addMembersToTag,
+    findTagInGroup,
+} from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
 
 const checked = new Set<number>();
@@ -11,8 +14,19 @@ const toggleChecked = (id: number) => {
 };
 
 export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
-    .dynamic(async () => {
-        const users = await getAllUsers();
+    .dynamic(async (ctx) => {
+        const groupId = ctx.session.activeGroupId;
+        const tagId = ctx.session.activeTagId;
+
+        if (!groupId || !tagId) {
+            console.error('Error: GroupId or TagId is not defined');
+            return;
+        }
+        const tagInfo = await findTagInGroup(groupId, tagId);
+        if (!tagInfo) return;
+        const users = await getAllUsers(
+            tagInfo.members?.map((user) => user.userId)
+        );
 
         const range = new MenuRange<SessionContext>();
 
@@ -40,13 +54,6 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
 
                     const users = await getUsersByIds(userIds);
                     if (!users) return;
-                    const groupId = ctx.session.activeGroupId;
-                    const tagId = ctx.session.activeTagId;
-                    
-                    if (!groupId || !tagId) {
-                        console.error('Error: GroupId or TagId is not defined');
-                        return;
-                    }
 
                     const membersToTag = await addMembersToTag({
                         groupId,
@@ -64,6 +71,7 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
         }
 
         return range;
+        
     })
     .row()
     .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {

@@ -80,9 +80,7 @@ export const getUserById = async (id: number): Promise<IUser | null> => {
     }
 };
 
-export const getUsersByIds = async (
-    ids: number[]
-): Promise<IUser[] | null> => {
+export const getUsersByIds = async (ids: number[]): Promise<IUser[] | null> => {
     try {
         const users = await UserModel.find({ userId: { $in: ids } }).exec();
         if (users.length > 0) {
@@ -98,9 +96,13 @@ export const getUsersByIds = async (
     }
 };
 
-export const getAllUsers = async (): Promise<IUser[] | null> => {
+export const getAllUsers = async (
+    excludeUserIds: number[] = []
+): Promise<IUser[] | null> => {
     try {
-        const users = await UserModel.find().exec();
+        const users = await UserModel.find({
+            userId: { $nin: excludeUserIds },
+        }).exec();
 
         return users;
     } catch (error: any) {

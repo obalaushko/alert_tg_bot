@@ -1,10 +1,8 @@
 import { Menu, MenuRange } from '@grammyjs/menu';
-import { getAllUsers, getUsersByIds } from '../../mongodb/operations/users.js';
+import { getUsersByIds } from '../../mongodb/operations/users.js';
 import { MSG } from '../../constants/messages.js';
 import {
-    addMembersToTag,
-    findTagInGroup,
-    removeMemberFromTag,
+    findTagInGroup, removeUsersFromTag,
 } from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
 import { UserModel } from '../../mongodb/schemas/user.js';
@@ -57,7 +55,6 @@ export const removeUsersFromTagMenu = new Menu<SessionContext>(
                 range.text(MSG.menu.buttons.update, async (ctx) => {
                     const userIds = [...checked];
 
-                    const users = await getUsersByIds(userIds);
                     if (!users) return;
 
                     if (!groupId || !tagId) {
@@ -65,10 +62,10 @@ export const removeUsersFromTagMenu = new Menu<SessionContext>(
                         return;
                     }
 
-                    const membersToTag = await removeMemberFromTag({
+                    const membersToTag = await removeUsersFromTag({
                         groupId,
                         tagId,
-                        memberToRemove: users,
+                        userIds: userIds,
                     });
 
                     checked.clear();

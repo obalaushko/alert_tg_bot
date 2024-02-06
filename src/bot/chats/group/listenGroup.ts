@@ -8,8 +8,7 @@ export const listenGroup = async () => {
     groupChat.on('message:text').filter(
         async (ctx) => {
             const message = ctx.msg.text;
-            console.log(message);
-            if (!message) return false;
+            if (!message.match(/#\w+/g)) return false;
             return true;
         },
         async (ctx) => {

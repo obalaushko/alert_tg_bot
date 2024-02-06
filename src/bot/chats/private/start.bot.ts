@@ -11,7 +11,8 @@ export const startBotDialog = async (ctx: BotContext) => {
     if (is_bot) return;
     try {
         ctx.session.activeGroupId = null;
-        const user = await getUserById(id);
+        ctx.session.activeTagId = null;
+        const user = await getUserById(id); // TODO save admins to session and check here
 
         if (user && user.role !== ROLES.User) {
             await ctx.reply(MSG.menu.text.start, {

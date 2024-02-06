@@ -1,5 +1,5 @@
-import { Document, Schema, SchemaTypes, model, Types } from 'mongoose';
-import { IUser } from './user.js';
+import { Document, Schema, model,  } from 'mongoose';
+import { IUser, userSchema } from './user.js';
 import { nanoid } from 'nanoid';
 
 export interface ITag {
@@ -41,12 +41,7 @@ export const groupSchema: Schema = new Schema<IGroup>({
                 minlength: 3,
                 maxlength: 20,
             },
-            members: [
-                {
-                    type: SchemaTypes.ObjectId,
-                    ref: 'User',
-                },
-            ],
+            members: [userSchema],
         },
     ],
     membersCount: {

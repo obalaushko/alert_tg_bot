@@ -1,14 +1,13 @@
 import { Menu, MenuRange } from '@grammyjs/menu';
 import { SessionContext } from '../types/index.js';
 import {
+    deleteTag,
     findAllTagsInGroup,
-    findTagInGroup,
 } from '../../mongodb/operations/groups.js';
 import { MSG } from '../../constants/messages.js';
-import { chooseHowUpdateTag } from './keyboards.js';
 
-export const showTagsInGroupMenu = new Menu<SessionContext>(
-    'showTagsInGroupMenu'
+export const removeTagMenu = new Menu<SessionContext>(
+    'removeTagMenu'
 )
     .dynamic(async (ctx) => {
         const groupId = ctx.session.activeGroupId;
@@ -35,19 +34,13 @@ export const showTagsInGroupMenu = new Menu<SessionContext>(
                             ctx.msg?.message_id!
                         );
 
-                        const tagInfo = await findTagInGroup(
-                            groupId,
-                            ctx.match
-                        );
+                        const removeTag = await deleteTag(groupId, ctx.match);
 
-                        if (!tagInfo) {
-                            console.error('Error: TagInfo is not defined');
+                        if (!removeTag) {
+                            console.error('Error: Tag is not removed');
                             return;
                         }
-
-                        await ctx.reply(MSG.menu.text.selectActions(tagInfo), {
-                            reply_markup: chooseHowUpdateTag,
-                        });
+                        ctx.reply(MSG.menu.text.tagRemoded);
                     }
                 );
                 if ((index + 1) % 3 === 0) range.row();
