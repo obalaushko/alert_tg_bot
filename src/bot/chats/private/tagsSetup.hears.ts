@@ -13,20 +13,30 @@ import { startBotDialog } from './start.bot.js';
 export const tagsSetupHears = async () => {
     privateChat.on('message:text').filter(
         async (ctx: BotContext) => {
-            // Now this condition is always true
-            // if (ctx.session.activeGroupId) {
-            //     return true;
-            // } else return false;
             const {
                 user: { id, is_bot, first_name },
             } = await ctx.getAuthor();
             if (is_bot) return false;
-            const user = await getUserById(id); // TODO save admins to session and check here
+            try {
+                const user =
+                    ctx.session?.admins?.length &&
+                    ctx.session.admins.find((admin) => admin.userId === id);
+                if (user) {
+                    return true;
+                } else {
+                    const user = await getUserById(id); //
 
-            if (user && user.role !== ROLES.User) {
-                return true;
-            } else {
-                console.log('User trying to talk with bot', first_name);
+                    if (user && user.role !== ROLES.User) {
+                        ctx.session.admins = [];
+                        ctx.session.admins.push(user);
+                        return true;
+                    } else {
+                        console.log('User trying to talk with bot', first_name);
+                        return false;
+                    }
+                }
+            } catch (err) {
+                console.error(err);
                 return false;
             }
         },

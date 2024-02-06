@@ -84,4 +84,8 @@ export const MSG = {
             back: '⬅️ Назад',
         },
     },
+    errors: {
+        forbidden: 'Дія заборонена.',
+        accessDenied: 'У доступі відмовленно.',
+    },
 };

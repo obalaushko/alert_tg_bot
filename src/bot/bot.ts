@@ -101,16 +101,15 @@ export const groupChat = bot.chatType(['group', 'supergroup']);
 const adapter = new MemorySessionStorage<ChatMember>();
 bot.use(chatMembers(adapter));
 
-
 //START COMMAND
 privateChat.command('start', async (ctx) => {
     await startBotDialog(ctx);
 });
 
-privateChat.command("cancel", async (ctx) => {
+privateChat.command('cancel', async (ctx) => {
     await ctx.conversation.exit();
     await ctx.reply(MSG.conversations.leaveConversation);
-  });
+});
 
 groupChat.command('remove', async (ctx) => {
     const { id } = await bot.api.getMe();
@@ -122,18 +121,6 @@ joinBotToTGGroup();
 tagsSetupHears();
 listenGroup();
 // simpleJoinBotToTGGroup();
-
-// privateChat.command('create', async (ctx) => {
-//     const group = await getGroupById(-1001992031620)
-//     await addUser({
-//         userId: 111,
-//         firstName: 'test',
-//         groupLink: group
-//     })
-// })
-
-
-
 
 //CRASH HANDLER
 bot.catch((err) => {
