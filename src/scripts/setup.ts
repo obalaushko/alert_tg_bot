@@ -96,7 +96,6 @@ async function configureEnvironment(): Promise<void> {
         );
 
         const adminId = await askQuestionWithDefault('Введіть ADMIN_ID', '""');
-        const groupId = await askQuestionWithDefault('Введіть GROUP_ID', '""');
         const mongoDbUser = await askQuestionWithDefault(
             'Введіть MONGO_DB_USER',
             '""'
@@ -117,7 +116,6 @@ async function configureEnvironment(): Promise<void> {
         const envLines = readEnvironmentFile(envPath);
 
         updateOrInsertEnvVariable(envLines, 'ADMIN_ID', adminId);
-        updateOrInsertEnvVariable(envLines, 'GROUP_ID', groupId);
         updateOrInsertEnvVariable(envLines, 'MONGO_DB_USER', mongoDbUser);
         updateOrInsertEnvVariable(
             envLines,

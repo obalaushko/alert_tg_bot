@@ -79,6 +79,12 @@ export const tagsSetupHears = async () => {
                         reply_markup: removeTagMenu,
                     });
                     break;
+                case MSG.menu.keyboards.back:
+                    await ctx.reply(MSG.menu.text.chooseTagToUpdate, {
+                        reply_markup: showTagsInGroupMenu,
+                    });
+                    break;
+                // Back to main keyboard
                 case MSG.menu.keyboards.backToMainKeyboard:
                     await ctx.reply(MSG.menu.buttons.cancelEdit, {
                         reply_markup: { remove_keyboard: true },

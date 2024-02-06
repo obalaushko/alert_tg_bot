@@ -15,6 +15,7 @@ export const chooseHowUpdateTag = new Keyboard()
     .text(MSG.menu.keyboards.editTagName)
     .text(MSG.menu.keyboards.removeUserFromTag)
     .row()
+    .text(MSG.menu.keyboards.back)
     .text(MSG.menu.keyboards.backToMainKeyboard)
     .resized()
     .oneTime();
