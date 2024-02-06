@@ -85,7 +85,7 @@ export const addTagToGroup = async ({
         }
 
         // Перевірка на валідність тегу
-        if (!/^[\p{L}]{3,20}$/u.test(tag)) {
+        if (!/^[\p{L}\d]{3,20}$/u.test(tag)) {
             console.error('[addTagToGroup][error]', {
                 metadata: { error: 'Invalid tag' },
             });
@@ -171,7 +171,7 @@ export const addMembersToTag = async ({
             },
         };
 
-        await GroupModel.updateOne({ groupId }, update);
+        await GroupModel.updateOne({ groupId }, update, { upsert: true });
 
         console.log('[addMembersToTag][success]', {
             metadata: { groupId, tagId, newMembers },
