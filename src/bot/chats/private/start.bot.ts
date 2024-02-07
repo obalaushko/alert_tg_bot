@@ -12,6 +12,15 @@ export const startBotDialog = async (ctx: BotContext) => {
     try {
         ctx.session.activeGroupId = null;
         ctx.session.activeTagId = null;
+        const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
+        const adminUser = await ctx.getChatMember(ADMIN_ID);
+        
+        if (adminUser.user.id === id) {
+            await ctx.reply(MSG.menu.text.start, {
+                reply_markup: mainMenu,
+            });
+            return;
+        }
         const user =
             ctx.session?.admins?.length &&
             ctx.session.admins.find((admin) => admin.userId === id);

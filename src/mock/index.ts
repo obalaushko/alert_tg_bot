@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
 interface UserObject {
     users: string[];
@@ -26,7 +27,7 @@ interface Group {
 export const readUserFile = async (): Promise<UserObject> => {
     try {
         const currentFileDirectory: string = path.dirname(
-            new URL(import.meta.url).pathname
+            fileURLToPath(import.meta.url)
         );
         const filePath: string = path.resolve(
             currentFileDirectory,

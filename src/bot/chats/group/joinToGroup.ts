@@ -21,7 +21,7 @@ export const joinBotToTGGroup = () => {
     
                 console.log('Admin user info', adminUser);
     
-                if (adminUser.status === 'creator') {
+                if (['member', 'creator', 'administrator'].includes(adminUser.status)) {
                     // save group to DB
                     if ('title' in chatInfo) {
                         const newGroup = await addGroup({
