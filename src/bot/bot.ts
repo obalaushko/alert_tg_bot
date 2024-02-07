@@ -17,7 +17,7 @@ import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
 
-import { BOT_RIGHTS, ROLES } from '../constants/global.js';
+import { BOT_RIGHTS } from '../constants/global.js';
 import { mainMenu } from './menu/start.menu.js';
 import { joinBotToTGGroup } from './chats/group/joinToGroup.js';
 import { conversations, createConversation } from '@grammyjs/conversations';
@@ -28,7 +28,7 @@ import { listenGroup } from './chats/group/listenGroup.js';
 // import { simpleJoinBotToTGGroup } from './chats/group/simple.joinToGroup.js';
 import { MSG } from '../constants/messages.js';
 import { changeTagConversations } from './conversations/changeTag.conversations.js';
-import { getUserById } from '../mongodb/operations/users.js';
+import { removeBotFromChat } from './chats/group/removeBotFromChat.js';
 
 dotenv.config();
 
@@ -112,29 +112,8 @@ privateChat.command('cancel', async (ctx) => {
     await ctx.reply(MSG.conversations.leaveConversation);
 });
 
-groupChat.command('remove', async (ctx) => {
-    const botInfo = await bot.api.getMe();
-    const {
-        user: { id, is_bot },
-    } = await ctx.getAuthor();
-    if (is_bot) return;
-    const user =
-        ctx.session?.admins?.length &&
-        ctx.session.admins.find((admin) => admin.userId === id);
-
-    if (user) {
-        await bot.api.unbanChatMember(ctx.chat.id, botInfo.id);
-    } else {
-        const user = await getUserById(id); //
-
-        if (user && user.role !== ROLES.User) {
-            ctx.session.admins = [];
-            ctx.session.admins.push(user);
-
-            await bot.api.unbanChatMember(ctx.chat.id, botInfo.id);
-        }
-    }
-});
+//REMOVE BOT FROM GROUP
+removeBotFromChat();
 
 joinBotToTGGroup();
 tagsSetupHears();
