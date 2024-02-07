@@ -1,4 +1,4 @@
-import { readUserFile, writeGroupFile } from '../../../../mock/index.js';
+import { readUserFile, writeGroupFile } from '../../../mock/index.js';
 import { bot, groupChat } from '../../bot.js';
 import { findUserInGroup } from '../../helpers/user.helper.js';
 

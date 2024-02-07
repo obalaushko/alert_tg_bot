@@ -8,9 +8,10 @@
         "node": "20.9.0"
     },
     "scripts": {
-        "start": "NODE_ENV=production node ./dist/src/index.js",
+        "start": "NODE_ENV=production node ./dist/index.js",
         "dev": "NODE_ENV=development nodemon --exec node --loader ts-node/esm ./src/index.ts",
-        "build": "tsc",
+        "build": "tsc && npm run postbuild",
+        "postbuild": "copyfiles -u 1 src/mock/*.json dist",
         "setup": "node dist/src/scripts/setup.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
@@ -24,6 +25,7 @@
         "@types/jest": "^29.5.8",
         "@types/node": "^20.8.4",
         "@types/node-cron": "^3.0.11",
+        "copyfiles": "^2.4.1",
         "eslint": "^8.51.0",
         "eslint-config-prettier": "^9.0.0",
         "nodemon": "^3.0.1",
