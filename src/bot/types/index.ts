@@ -10,6 +10,7 @@ interface SessionData {
     activeGroupId: number | null;
     activeTagId: string | null;
     admins: IUser[];
+    userList: { users: string[] };
 }
 export type SessionContext = Context & SessionFlavor<SessionData>;
 export type BotContext = SessionContext &

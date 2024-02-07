@@ -4,6 +4,14 @@ export const ROLES = {
     Creator: 'creator'
 };
 
+interface IList { 
+    userList: { users: string[] };
+}
+
+export const USER_LIST: IList = {
+    userList: { users: []}
+}
+
 export const BOT_RIGHTS = {
     is_anonymous: true,
     can_manage_chat: true,

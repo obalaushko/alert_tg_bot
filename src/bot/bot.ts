@@ -29,6 +29,8 @@ import { listenGroup } from './chats/group/listenGroup.js';
 import { MSG } from '../constants/messages.js';
 import { changeTagConversations } from './conversations/changeTag.conversations.js';
 import { removeBotFromChat } from './chats/group/removeBotFromChat.js';
+import { loadUsers } from './chats/private/loadUsers.js';
+import { loadUsersConversations } from './conversations/loadUsers.conversations.js';
 
 dotenv.config();
 
@@ -94,6 +96,7 @@ bot.use(mainMenu);
 bot.use(conversations());
 bot.use(createConversation(createTagConversations));
 bot.use(createConversation(changeTagConversations));
+bot.use(createConversation(loadUsersConversations));
 
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);
@@ -115,6 +118,7 @@ privateChat.command('cancel', async (ctx) => {
 //REMOVE BOT FROM GROUP
 removeBotFromChat();
 
+loadUsers();
 joinBotToTGGroup();
 tagsSetupHears();
 listenGroup();
