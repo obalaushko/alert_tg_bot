@@ -10,8 +10,7 @@
     "scripts": {
         "start": "NODE_ENV=production node ./dist/index.js",
         "dev": "NODE_ENV=development nodemon --exec node --loader ts-node/esm ./src/index.ts",
-        "build": "tsc && npm run postbuild",
-        "postbuild": "copyfiles -u 1 src/mock/*.json dist",
+        "build": "tsc",
         "setup": "node dist/src/scripts/setup.js",
         "format:check": "prettier --check .",
         "format:write": "prettier --write .",
