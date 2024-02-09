@@ -70,3 +70,13 @@
 Або ж ви можете просто відкрити потрібну групу в веб-версії Telegram і подивитися на URL. Це буде щось на зразок `https://web.telegram.org/z/xxxxxxxxxx`, де `xxxxxxxxxx` - це ID групи.
 
 Зверніть увагу, що ці методи повертають ID групи як від'ємне число. Це нормально, Telegram використовує від'ємні числа для позначення ID груп.
+
+### Troubleshooting
+
+Якщо бачите таку помилку при встановці на віндовс.
+
+`'NODE_ENV' is not recognized as an internal or external command,
+operable program or batch file.`
+
+Спробуйте виконати в терміналі наступну команду
+`npm install -g win-node-env`
