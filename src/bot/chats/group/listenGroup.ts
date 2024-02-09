@@ -5,7 +5,7 @@ import { groupChat } from '../../bot.js';
 import { BotContext } from '../../types/index.js';
 
 export const listenGroup = async () => {
-    groupChat.on('message:text').filter(
+    groupChat.on(['message:text', 'edit']).filter(
         async (ctx: BotContext) => {
             // ! Bot must be admin in the group
             try {
@@ -42,9 +42,11 @@ export const listenGroup = async () => {
             const groups = await getAllGroups();
             const uniqueUsers = new Set<string>();
             if (!groups) return console.error('Error: Groups are not defined');
-            const message = ctx.message?.text;
+            const message = ctx.msg?.text || ctx.message?.text;
             if (!message) return console.error('Error: Message is not defined');
             const tagsMatch = message.match(/#\w+/g);
+
+            const messageId = ctx.message?.message_id || ctx.msg?.message_id;
 
             groups.forEach((group) => {
                 if (tagsMatch) {
@@ -68,7 +70,13 @@ export const listenGroup = async () => {
             // Send message to the group
             if (uniqueUsers.size) {
                 const usernames = [...uniqueUsers].join(', ');
-                await ctx.reply(usernames);
+                try {
+                    await ctx.reply(usernames, {
+                        reply_to_message_id: messageId,
+                    });
+                } catch (err) {
+                    console.error('Error: Send message to the group', err);
+                }
             }
         }
     );
