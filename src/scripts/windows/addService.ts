@@ -14,7 +14,7 @@ if (!projectPath) {
 
 const svc = new Service({
   name: 'Telegram_bot',
-  description: 'The nodejs.org example web server.',
+  description: 'Add service Telegram bot (alert_bot).',
   script: path.join(projectPath, 'node_modules', '.bin', 'npm'),
 });
 
