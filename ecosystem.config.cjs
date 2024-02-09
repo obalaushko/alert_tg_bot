@@ -15,8 +15,6 @@ module.exports = {
       exec_mode: 'fork',
       exec_interpreter: 'bash',
       post_update: [
-        'git reset --hard',
-        'git checkout main',
         'git pull',
         'npm run build',
       ],
