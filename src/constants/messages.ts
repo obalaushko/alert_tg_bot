@@ -15,6 +15,11 @@ export const MSG = {
         tagUpdated: 'Тег успішно оновлено!',
         loadingUsers: 'Завантаж список користувачів...',
     },
+    groups: {
+        greetings: {
+            static: 'Всім доброго ранку!'
+        }
+    },
     menu: {
         text: {
             selectActions: (tag: ITag) =>

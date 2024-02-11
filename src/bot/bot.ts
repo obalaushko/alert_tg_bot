@@ -16,6 +16,7 @@ import { type ChatMember } from 'grammy/types';
 import { BotContext } from './types/index.js';
 import { COMMANDS } from './commands/index.js';
 import * as dotenv from 'dotenv';
+import cron from 'node-cron';
 
 import { BOT_RIGHTS } from '../constants/global.js';
 import { mainMenu } from './menu/start.menu.js';
@@ -25,12 +26,12 @@ import { createTagConversations } from './conversations/createTag.conversations.
 import { startBotDialog } from './chats/private/start.bot.js';
 import { tagsSetupHears } from './chats/private/tagsSetup.hears.js';
 import { listenGroup } from './chats/group/listenGroup.js';
-// import { simpleJoinBotToTGGroup } from './chats/group/simple.joinToGroup.js';
 import { MSG } from '../constants/messages.js';
 import { changeTagConversations } from './conversations/changeTag.conversations.js';
 import { removeBotFromChat } from './chats/group/removeBotFromChat.js';
 import { loadUsers } from './chats/private/loadUsers.js';
 import { loadUsersConversations } from './conversations/loadUsers.conversations.js';
+import { greetingsInGroup } from './chats/group/greetingsInGroup.js';
 
 dotenv.config();
 
@@ -98,12 +99,20 @@ bot.use(createConversation(createTagConversations));
 bot.use(createConversation(changeTagConversations));
 bot.use(createConversation(loadUsersConversations));
 
+// Shedule
+// Greetings in group
+// 7:59 Monday to Friday
+cron.schedule('59 7 * * 1-5', greetingsInGroup);
+
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);
 
 // check group and update data
 const adapter = new MemorySessionStorage<ChatMember>();
 bot.use(chatMembers(adapter));
+
+// Admin check middleware
+// bot.use(adminCheck);
 
 //START COMMAND
 privateChat.command('start', async (ctx) => {

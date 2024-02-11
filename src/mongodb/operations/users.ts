@@ -14,6 +14,7 @@ export const addUser = async ({
     try {
         const user = await getUserById(userId);
         if (user) {
+            console.log(`[addUser][info] User already exists: ${userId}`)
             return null;
         }
 
