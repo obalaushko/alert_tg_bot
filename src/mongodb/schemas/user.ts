@@ -1,5 +1,5 @@
-import { Model, Schema, model } from "mongoose";
-import { ROLES } from "../../constants/global.js";
+import { Model, Schema, model } from 'mongoose';
+import { ROLES } from '../../constants/global.js';
 
 export interface IUser extends Document {
     userId: number;
@@ -27,7 +27,7 @@ export const userSchema: Schema = new Schema<IUser>({
     firstName: {
         type: String,
         required: false,
-    }
+    },
 });
 
 export const UserModel: Model<IUser> = model<IUser>('User', userSchema);

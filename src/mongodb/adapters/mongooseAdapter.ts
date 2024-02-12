@@ -8,7 +8,7 @@ interface SessionDocument extends Session, Document {}
 
 const sessionSchema = new Schema<SessionDocument>({
     _id: String,
-    data: Schema.Types.Mixed
+    data: Schema.Types.Mixed,
 });
 
 const SessionModel: Model<SessionDocument> = model('Session', sessionSchema);
@@ -27,4 +27,3 @@ export class MongooseAdapter {
         await SessionModel.findByIdAndDelete(id);
     }
 }
-

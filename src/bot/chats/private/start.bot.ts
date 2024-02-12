@@ -12,7 +12,7 @@ export const startBotDialog = async (ctx: BotContext) => {
         ctx.session.activeTagId = null;
         const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
         const adminUser = await ctx.getChatMember(ADMIN_ID);
-        
+
         if (adminUser.user.id === id) {
             await ctx.reply(MSG.menu.text.start, {
                 reply_markup: mainMenu,

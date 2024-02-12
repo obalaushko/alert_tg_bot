@@ -18,13 +18,18 @@ export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
                         },
                         async (ctx) => {
                             ctx.session.activeGroupId = group.groupId;
-                            await ctx.api.deleteMessage(ctx.chat?.id!, ctx.msg?.message_id!);
+                            await ctx.api.deleteMessage(
+                                ctx.chat?.id!,
+                                ctx.msg?.message_id!
+                            );
                             const groupInfo = await getGroupById(group.groupId);
                             if (!groupInfo) {
-                                console.error('Error: GroupInfo is not defined');
+                                console.error(
+                                    'Error: GroupInfo is not defined'
+                                );
                                 return;
                             }
-                            
+
                             await ctx.reply(MSG.menu.text.setupTag(groupInfo), {
                                 reply_markup: setupTagKeyboard,
                             });

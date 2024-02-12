@@ -6,9 +6,7 @@ import {
 } from '../../mongodb/operations/groups.js';
 import { MSG } from '../../constants/messages.js';
 
-export const removeTagMenu = new Menu<SessionContext>(
-    'removeTagMenu'
-)
+export const removeTagMenu = new Menu<SessionContext>('removeTagMenu')
     .dynamic(async (ctx) => {
         const groupId = ctx.session.activeGroupId;
         if (!groupId) {

@@ -4,14 +4,13 @@ import { setupTagKeyboard } from '../menu/keyboards.js';
 import { BotContext, ConverstaionContext } from '../types/index.js';
 import { isCancel } from '../utils/utils.js';
 
-export const createTagConversations = async(
+export const createTagConversations = async (
     conversation: ConverstaionContext,
     ctx: BotContext
 ) => {
     const { user } = await ctx.getAuthor();
     console.log('[createTagConversations]', user);
 
-    
     await ctx.reply(MSG.conversations.chooseTagTitle, {
         reply_markup: { remove_keyboard: true },
     });
@@ -64,8 +63,8 @@ export const createTagConversations = async(
                 tag: tag,
                 tagTitle: title,
             });
-            
-            return newTag
+
+            return newTag;
         } else {
             console.error('Error activeGroupId not found!');
         }

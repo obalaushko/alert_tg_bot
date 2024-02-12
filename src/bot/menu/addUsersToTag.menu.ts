@@ -71,7 +71,6 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
         }
 
         return range;
-        
     })
     .row()
     .text(MSG.menu.buttons.backToMainMenu, async (ctx) => {

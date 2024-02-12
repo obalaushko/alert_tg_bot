@@ -1,5 +1,5 @@
-import { Keyboard } from "grammy";
-import { MSG } from "../../constants/messages.js";
+import { Keyboard } from 'grammy';
+import { MSG } from '../../constants/messages.js';
 
 export const setupTagKeyboard = new Keyboard()
     .text(MSG.menu.keyboards.createTag)
