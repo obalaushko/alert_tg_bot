@@ -1,4 +1,4 @@
-import { Document, Schema, model,  } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 import { IUser, userSchema } from './user.js';
 import { nanoid } from 'nanoid';
 
@@ -13,7 +13,6 @@ export interface IGroup extends Document {
     title: string;
     type?: string;
     tags?: ITag[];
-    membersCount?: number;
 }
 
 export const groupSchema: Schema = new Schema<IGroup>({
@@ -37,16 +36,12 @@ export const groupSchema: Schema = new Schema<IGroup>({
             title: String,
             tag: {
                 type: String,
-                unique: true,
                 minlength: 3,
                 maxlength: 20,
             },
             members: [userSchema],
         },
     ],
-    membersCount: {
-        type: Number,
-    },
 });
 
 export const GroupModel = model<IGroup>('Group', groupSchema);
