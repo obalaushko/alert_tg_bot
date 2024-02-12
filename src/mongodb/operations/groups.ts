@@ -192,7 +192,6 @@ export const addMembersToTag = async ({
     }
 };
 
-
 export const removeUsersFromTag = async ({
     groupId,
     tagId,
@@ -218,7 +217,7 @@ export const removeUsersFromTag = async ({
             return null;
         }
 
-        const tag = group.tags.find(tag => tag.id === tagId);
+        const tag = group.tags.find((tag) => tag.id === tagId);
         if (!tag) {
             console.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'Tag not found' },
@@ -233,7 +232,9 @@ export const removeUsersFromTag = async ({
             return null;
         }
 
-        tag.members = tag.members.filter(member => !userIds.includes(member.userId));
+        tag.members = tag.members.filter(
+            (member) => !userIds.includes(member.userId)
+        );
 
         const updatedGroup = await group.save();
 

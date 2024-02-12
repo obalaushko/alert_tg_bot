@@ -14,15 +14,8 @@ const myFormat = printf(({ level, message, timestamp, ...metadata }) => {
 const logger = createLogger({
     level: 'info',
     exitOnError: false,
-    format: combine(
-        colorize(),
-        timestamp(),
-        myFormat,
-        errorsFormat
-    ),
-    transports: [
-        new transports.Console(),
-    ],
+    format: combine(colorize(), timestamp(), myFormat, errorsFormat),
+    transports: [new transports.Console()],
 });
 
 export { logger };

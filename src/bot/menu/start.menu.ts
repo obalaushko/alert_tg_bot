@@ -14,9 +14,9 @@ export const mainMenu = new Menu('mainMenu')
         } = await ctx.getAuthor();
         try {
             ctx.menu.nav('setupAdminMenu');
-            await ctx.editMessageText(MSG.menu.text.setupAdmin); 
+            await ctx.editMessageText(MSG.menu.text.setupAdmin);
         } catch (err) {
-            console.error('Error setupAdmins', err)
+            console.error('Error setupAdmins', err);
         }
     })
     .text(MSG.menu.buttons.setupTags, async (ctx) => {
@@ -25,15 +25,15 @@ export const mainMenu = new Menu('mainMenu')
         } = await ctx.getAuthor();
         try {
             ctx.menu.nav('setupTagMenu');
-            await ctx.editMessageText(MSG.menu.text.chooseGroupToUpdate); 
+            await ctx.editMessageText(MSG.menu.text.chooseGroupToUpdate);
         } catch (err) {
-            console.error('Error setupTags', err)
+            console.error('Error setupTags', err);
         }
     });
 
-mainMenu.register(setupAdminMenu)
-mainMenu.register(addUsersToTagMenu as any)
-mainMenu.register(removeUsersFromTagMenu as any)
-mainMenu.register(removeTagMenu as any)
-mainMenu.register(setupTagMenu as any)
-mainMenu.register(showTagsInGroupMenu as any)
+mainMenu.register(setupAdminMenu);
+mainMenu.register(addUsersToTagMenu as any);
+mainMenu.register(removeUsersFromTagMenu as any);
+mainMenu.register(removeTagMenu as any);
+mainMenu.register(setupTagMenu as any);
+mainMenu.register(showTagsInGroupMenu as any);

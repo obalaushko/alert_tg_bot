@@ -19,12 +19,10 @@ export async function findUserInGroup(
                             userId: user.id,
                             username: user.username,
                             firstName: user.first_name,
-                            groupLink: group,
                         } as IUser);
                     } else {
                         users.push({
                             userId: user.id,
-                            groupLink: group,
                         } as IUser);
                     }
                 }

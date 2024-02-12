@@ -2,7 +2,8 @@ import { Menu, MenuRange } from '@grammyjs/menu';
 import { getUsersByIds } from '../../mongodb/operations/users.js';
 import { MSG } from '../../constants/messages.js';
 import {
-    findTagInGroup, removeUsersFromTag,
+    findTagInGroup,
+    removeUsersFromTag,
 } from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
 import { UserModel } from '../../mongodb/schemas/user.js';

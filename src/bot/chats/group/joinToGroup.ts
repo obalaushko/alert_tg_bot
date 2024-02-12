@@ -32,7 +32,7 @@ export const joinBotToTGGroup = () => {
                 ) {
                     // save group to DB
                     if ('title' in chatInfo) {
-                        const newGroup = await addGroup({
+                        await addGroup({
                             groupId: chatInfo.id,
                             title: chatInfo.title,
                             type: chatInfo.type,
@@ -43,7 +43,6 @@ export const joinBotToTGGroup = () => {
                             username: adminUser.user.username,
                             firstName: adminUser.user.first_name,
                             role: ROLES.Creator,
-                            groupLink: newGroup,
                         });
 
                         const usersGroup = await findUserInGroup(

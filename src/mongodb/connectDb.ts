@@ -25,7 +25,9 @@ const connectDb = async () => {
                 sendLog: true,
             });
         } else {
-            console.error(`[connectDb][DB connection failed]`, { metadata: '' });
+            console.error(`[connectDb][DB connection failed]`, {
+                metadata: '',
+            });
         }
     } catch (error: any) {
         // setTimeout(connectDb, 5000);

@@ -1,16 +1,16 @@
 export const ROLES = {
     Admin: 'admin',
     User: 'user',
-    Creator: 'creator'
+    Creator: 'creator',
 };
 
-interface IList { 
+interface IList {
     userList: { users: string[] };
 }
 
 export const USER_LIST: IList = {
-    userList: { users: []}
-}
+    userList: { users: [] },
+};
 
 export const BOT_RIGHTS = {
     is_anonymous: true,

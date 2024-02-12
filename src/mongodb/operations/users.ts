@@ -6,15 +6,14 @@ export const addUser = async ({
     username,
     role,
     firstName,
-    groupLink,
 }: Pick<
     IUser,
-    'userId' | 'username' | 'role' | 'firstName' | 'groupLink'
+    'userId' | 'username' | 'role' | 'firstName'
 >): Promise<IUser | null> => {
     try {
         const user = await getUserById(userId);
         if (user) {
-            console.log(`[addUser][info] User already exists: ${userId}`)
+            console.log(`[addUser][info] User already exists: ${userId}`);
             return null;
         }
 
@@ -23,7 +22,6 @@ export const addUser = async ({
             username,
             role,
             firstName,
-            groupLink,
         });
 
         const savedUser = await newUser.save();

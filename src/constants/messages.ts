@@ -17,8 +17,8 @@ export const MSG = {
     },
     groups: {
         greetings: {
-            static: 'Всім доброго ранку!'
-        }
+            static: 'Всім доброго ранку!',
+        },
     },
     menu: {
         text: {

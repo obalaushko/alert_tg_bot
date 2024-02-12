@@ -1,13 +1,11 @@
-import { Model, Schema, SchemaTypes, model } from "mongoose";
-import { ROLES } from "../../constants/global.js";
-import { IGroup } from "./group.js";
+import { Model, Schema, model } from 'mongoose';
+import { ROLES } from '../../constants/global.js';
 
 export interface IUser extends Document {
     userId: number;
     role?: (typeof ROLES)[keyof typeof ROLES];
     username?: string;
     firstName?: string;
-    groupLink?: IGroup | null
 }
 
 export const userSchema: Schema = new Schema<IUser>({
@@ -29,10 +27,6 @@ export const userSchema: Schema = new Schema<IUser>({
     firstName: {
         type: String,
         required: false,
-    },
-    groupLink: {
-        type: SchemaTypes.ObjectId,
-        ref: 'Group',
     },
 });
 
