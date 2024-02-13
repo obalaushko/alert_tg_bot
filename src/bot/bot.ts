@@ -101,8 +101,8 @@ bot.use(createConversation(loadUsersConversations));
 
 // Shedule
 // Greetings in group
-// 7:59 Monday to Friday
-cron.schedule('59 7 * * 1-5', greetingsInGroup);
+// 7:59 Monday to Friday (59 7 * * 1-5)
+cron.schedule('59 7 * * 1-5', () => greetingsInGroup());
 
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);

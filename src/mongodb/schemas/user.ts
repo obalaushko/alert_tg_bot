@@ -12,12 +12,10 @@ export const userSchema: Schema = new Schema<IUser>({
     userId: {
         type: Number,
         required: true,
-        unique: true,
     },
     username: {
         type: String,
         required: false,
-        unique: true,
     },
     role: {
         type: String,

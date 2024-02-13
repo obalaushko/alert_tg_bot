@@ -1,5 +1,8 @@
 import { ROLES } from '../../../constants/global.js';
-import { getAllGroups } from '../../../mongodb/operations/groups.js';
+import {
+    getAllGroups,
+    updateGroup,
+} from '../../../mongodb/operations/groups.js';
 import { getUserById } from '../../../mongodb/operations/users.js';
 import { groupChat } from '../../bot.js';
 import { BotContext } from '../../types/index.js';
@@ -80,4 +83,16 @@ export const listenGroup = async () => {
             }
         }
     );
+    groupChat.on('message:migrate_to_chat_id', async (ctx) => {
+        console.log('Update Group after migration to supergroup')
+        const group = await ctx.getChat();
+
+        const newGroupId = ctx.message.migrate_to_chat_id;
+
+        await updateGroup({
+            id: group.id,
+            newGroupId: newGroupId,
+            newType: 'supergroup',
+        });
+    });
 };
