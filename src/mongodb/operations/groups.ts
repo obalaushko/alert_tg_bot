@@ -53,6 +53,41 @@ export const getGroupById = async (id: number): Promise<IGroup | null> => {
     }
 };
 
+interface UpdateGroupParams {
+    id: number;
+    newGroupId?: number;
+    newType?: string;
+    newTitle?: string;
+}
+
+export const updateGroup = async ({
+    id,
+    newGroupId,
+    newType,
+    newTitle,
+}: UpdateGroupParams): Promise<IGroup | null> => {
+    try {
+        const group = await GroupModel.findOneAndUpdate(
+            { groupId: id },
+            { groupId: newGroupId, type: newType, title: newTitle },
+            { new: true }
+        ).exec();
+
+        if (group) {
+            console.log('[updateGroup][success]', { metadata: { group } });
+            return group;
+        } else {
+            console.error(`[updateGroup][error]: Group with ${id} not found`);
+            return null;
+        }
+    } catch (error: any) {
+        console.error('[updateGroup][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
 export const getAllGroups = async (): Promise<IGroup[] | null> => {
     try {
         const groups = await GroupModel.find().exec();
@@ -419,5 +454,31 @@ export const editTag = async ({
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
+    }
+};
+
+export const deleteGroup = async (groupId: number): Promise<boolean> => {
+    try {
+        const group = await GroupModel.findOne({ groupId });
+
+        if (!group) {
+            console.error('[deleteGroup][error]', {
+                metadata: { error: 'Group not found' },
+            });
+            return false;
+        }
+
+        await GroupModel.deleteOne({ groupId });
+
+        console.log('[deleteGroup][success]', {
+            metadata: { groupId },
+        });
+
+        return true;
+    } catch (error: any) {
+        console.error('[deleteGroup][error]', {
+            metadata: { error: error, stack: error.stack?.toString() },
+        });
+        return false;
     }
 };

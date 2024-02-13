@@ -27,8 +27,7 @@ export const joinBotToTGGroup = () => {
                 if (
                     ['member', 'creator', 'administrator'].includes(
                         adminUser.status
-                    ) &&
-                    mockData.users.length > 0
+                    )
                 ) {
                     // save group to DB
                     if ('title' in chatInfo) {

@@ -1,3 +1,4 @@
+import { deleteGroup } from '../../../mongodb/operations/groups.js';
 import { bot, groupChat } from '../../bot.js';
 
 export const removeBotFromChat = async () => {
@@ -19,6 +20,7 @@ export const removeBotFromChat = async () => {
                     } else {
                         await bot.api.banChatMember(chatInfo.id, botInfo.id);
                     }
+                    await deleteGroup(chatInfo.id);
                 } catch (err) {
                     console.error('[removeBotFromChat][error]', err);
                 }
