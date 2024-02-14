@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import TelegramLogger from 'winston-telegram';
 
 import * as dotenv from 'dotenv';
-import { LOOGER_GROUP_ID } from '../constants/global.js';
+import { FORMAT_DATE, LOOGER_GROUP_ID } from '../constants/global.js';
 
 dotenv.config();
 
@@ -29,7 +29,7 @@ const telegramTransport = new TelegramLogger({
     formatMessage: (info) => {
         try {
             return `<b>[${info.level}]</b> ${info.message}: <pre>${
-                info.metadata ? JSON.stringify(info.metadata) : ''
+                info.metadata ? JSON.stringify(info.metadata, null, 2) : ''
             }</pre>`;
         } catch (err) {
             console.error(`[error] ${err}`);
@@ -58,7 +58,12 @@ if (mode === 'production') {
 logger.add(
     new transports.Console({
         level: 'info',
-        format: combine(colorize(), timestamp(), myFormat, errorsFormat),
+        format: combine(
+            colorize(),
+            timestamp({ format: FORMAT_DATE }),
+            myFormat,
+            errorsFormat
+        ),
     })
 );
 

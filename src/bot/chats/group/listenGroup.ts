@@ -1,7 +1,7 @@
 import { ROLES } from '../../../constants/global.js';
 import { LOGGER } from '../../../logger/index.js';
 import {
-    getAllGroups,
+    getGroupById,
     updateGroup,
 } from '../../../mongodb/operations/groups.js';
 import { getUserById } from '../../../mongodb/operations/users.js';
@@ -43,34 +43,36 @@ export const listenGroup = async () => {
             }
         },
         async (ctx: BotContext) => {
-            const groups = await getAllGroups();
+            const { id } = await ctx.getChat();
+
+            const group = await getGroupById(id);
+
             const uniqueUsers = new Set<string>();
-            if (!groups) return LOGGER.error('Error: Groups are not defined');
+            if (!group)
+                return LOGGER.error(`Error: group with id ${id} not found`);
             const message = ctx.msg?.text || ctx.message?.text;
             if (!message) return LOGGER.error('Error: Message is not defined');
             const tagsMatch = message.match(/#\w+/g);
 
             const messageId = ctx.message?.message_id || ctx.msg?.message_id;
 
-            groups.forEach((group) => {
-                if (tagsMatch) {
-                    tagsMatch?.forEach((tag) => {
-                        if ('tags' in group) {
-                            const groupTag =
-                                group.tags &&
-                                group.tags.find((t) => t.tag === tag);
-                            if (groupTag) {
-                                // If the tag is known, respond accordingly
-                                if (groupTag.members?.length) {
-                                    groupTag.members.forEach((m) => {
-                                        uniqueUsers.add('@' + m.username);
-                                    });
-                                }
+            if (tagsMatch) {
+                tagsMatch?.forEach((tag) => {
+                    if ('tags' in group) {
+                        const groupTag =
+                            group.tags && group.tags.find((t) => t.tag === tag);
+                        if (groupTag) {
+                            // If the tag is known, respond accordingly
+                            if (groupTag.members?.length) {
+                                groupTag.members.forEach((m) => {
+                                    uniqueUsers.add('@' + m.username);
+                                });
                             }
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+
             // Send message to the group
             if (uniqueUsers.size) {
                 const usernames = [...uniqueUsers].join(', ');

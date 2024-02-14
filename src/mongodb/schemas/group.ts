@@ -27,21 +27,28 @@ export const groupSchema: Schema = new Schema<IGroup>({
     type: {
         type: String,
     },
-    tags: [
-        {
-            id: {
-                type: String,
-                default: () => nanoid(),
+    tags: {
+        type: [
+            {
+                id: {
+                    type: String,
+                    default: () => nanoid(),
+                },
+                title: String,
+                tag: {
+                    unique: true,
+                    type: String,
+                    minlength: 3,
+                    maxlength: 20,
+                },
+                members: {
+                    type: [userSchema],
+                    default: [],
+                },
             },
-            title: String,
-            tag: {
-                type: String,
-                minlength: 3,
-                maxlength: 20,
-            },
-            members: [userSchema],
-        },
-    ],
+        ],
+        default: [],
+    },
 });
 
 export const GroupModel = model<IGroup>('Group', groupSchema);
