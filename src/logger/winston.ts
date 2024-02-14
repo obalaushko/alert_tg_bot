@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import TelegramLogger from 'winston-telegram';
 
 import * as dotenv from 'dotenv';
-import { LOOGER_GROUP_ID } from '../constants/global.js';
+import { FORMAT_DATE, LOOGER_GROUP_ID } from '../constants/global.js';
 
 dotenv.config();
 
@@ -58,7 +58,12 @@ if (mode === 'production') {
 logger.add(
     new transports.Console({
         level: 'info',
-        format: combine(colorize(), timestamp(), myFormat, errorsFormat),
+        format: combine(
+            colorize(),
+            timestamp({ format: FORMAT_DATE }),
+            myFormat,
+            errorsFormat
+        ),
     })
 );
 
