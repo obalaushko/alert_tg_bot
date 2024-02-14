@@ -1,3 +1,4 @@
+import { LOGGER } from '../../logger/index.js';
 import { ISession, SessionModel } from '../schemas/sessions.js';
 
 export const getSession = async (): Promise<ISession[] | null> => {
@@ -6,7 +7,7 @@ export const getSession = async (): Promise<ISession[] | null> => {
 
         return users;
     } catch (error: any) {
-        console.error('[getSession][error]', {
+        LOGGER.error('[getSession][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;

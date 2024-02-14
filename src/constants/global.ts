@@ -12,6 +12,8 @@ export const USER_LIST: IList = {
     userList: { users: [] },
 };
 
+export const LOOGER_GROUP_ID = -1002007434373;
+
 export const BOT_RIGHTS = {
     is_anonymous: true,
     can_manage_chat: true,

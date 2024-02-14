@@ -1,5 +1,6 @@
 import { USER_LIST } from '../../constants/global.js';
 import { MSG } from '../../constants/messages.js';
+import { LOGGER } from '../../logger/index.js';
 import { BotContext, ConverstaionContext } from '../types/index.js';
 
 export const loadUsersConversations = async (
@@ -7,7 +8,7 @@ export const loadUsersConversations = async (
     ctx: BotContext
 ) => {
     const { user } = await ctx.getAuthor();
-    console.log('[loadUsersConversations]', user);
+    LOGGER.info('[loadUsersConversations]', { metadata: user });
 
     await ctx.reply(MSG.conversations.loadingUsers);
 
@@ -17,11 +18,11 @@ export const loadUsersConversations = async (
 
     try {
         const data = JSON.parse(text);
-        // console.log(ctx.session)
+        // LOGGER.info(ctx.session)
         // ctx.session.userList = data;
         USER_LIST.userList.users.push(...data.users);
-        console.log('Updated user list', data);
+        LOGGER.info('Updated user list', { metadata: data });
     } catch (err) {
-        console.error('Error parse JSON', err);
+        LOGGER.error('Error parse JSON', { metadata: err });
     }
 };

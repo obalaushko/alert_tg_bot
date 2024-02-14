@@ -8,6 +8,7 @@ import {
     getGroupById,
     updateGroup,
 } from '../../../mongodb/operations/groups.js';
+import { LOGGER } from '../../../logger/index.js';
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ export const greetingsInGroup = async (groupId?: number) => {
         const GROUP_ID = groupId || process.env.GROUP_ID || '';
 
         if (!GROUP_ID) {
-            console.error('Error: GROUP_ID/groupId is not defined');
+            LOGGER.error('Error: GROUP_ID/groupId is not defined');
             return;
         }
 
@@ -26,13 +27,13 @@ export const greetingsInGroup = async (groupId?: number) => {
             // TMP group id
             await bot.api.sendMessage(GROUP_ID, MSG.groups.greetings.static);
 
-            console.log('Greetings sent!');
+            LOGGER.info('Greetings sent!');
         }
     } catch (error) {
-        console.error('Error in greetingsInGroup', error);
+        LOGGER.error('Error in greetingsInGroup', { metadata: error });
         if (error instanceof GrammyError) {
             if (error.parameters.migrate_to_chat_id) {
-                console.log('Update group after Error migration to supergroup');
+                LOGGER.info('Update group after Error migration to supergroup');
                 const newGroupId = error.parameters.migrate_to_chat_id;
 
                 const GROUP_ID = process.env.GROUP_ID || '';

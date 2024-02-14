@@ -1,5 +1,6 @@
 import { ROLES } from '../../../constants/global.js';
 import { MSG } from '../../../constants/messages.js';
+import { LOGGER } from '../../../logger/index.js';
 import { getUserById } from '../../../mongodb/operations/users.js';
 import { privateChat } from '../../bot.js';
 import { addUsersToTagMenu } from '../../menu/addUsersToTag.menu.js';
@@ -31,12 +32,14 @@ export const tagsSetupHears = async () => {
                         ctx.session.admins.push(user);
                         return true;
                     } else {
-                        console.log('User trying to talk with bot', first_name);
+                        LOGGER.info('User trying to talk with bot', {
+                            metadata: first_name,
+                        });
                         return false;
                     }
                 }
             } catch (err) {
-                console.error(err);
+                LOGGER.error({ metadata: err });
                 return false;
             }
         },

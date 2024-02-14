@@ -6,6 +6,7 @@ import {
 } from '../../mongodb/operations/groups.js';
 import { MSG } from '../../constants/messages.js';
 import { chooseHowUpdateTag } from './keyboards.js';
+import { LOGGER } from '../../logger/index.js';
 
 export const showTagsInGroupMenu = new Menu<SessionContext>(
     'showTagsInGroupMenu'
@@ -13,7 +14,7 @@ export const showTagsInGroupMenu = new Menu<SessionContext>(
     .dynamic(async (ctx) => {
         const groupId = ctx.session.activeGroupId;
         if (!groupId) {
-            console.error('Error: GroupId is not defined');
+            LOGGER.error('Error: GroupId is not defined');
             return new MenuRange<SessionContext>();
         }
 
@@ -41,7 +42,7 @@ export const showTagsInGroupMenu = new Menu<SessionContext>(
                         );
 
                         if (!tagInfo) {
-                            console.error('Error: TagInfo is not defined');
+                            LOGGER.error('Error: TagInfo is not defined');
                             return;
                         }
 

@@ -5,12 +5,13 @@ import {
     findAllTagsInGroup,
 } from '../../mongodb/operations/groups.js';
 import { MSG } from '../../constants/messages.js';
+import { LOGGER } from '../../logger/index.js';
 
 export const removeTagMenu = new Menu<SessionContext>('removeTagMenu')
     .dynamic(async (ctx) => {
         const groupId = ctx.session.activeGroupId;
         if (!groupId) {
-            console.error('Error: GroupId is not defined');
+            LOGGER.error('Error: GroupId is not defined');
             return new MenuRange<SessionContext>();
         }
 
@@ -35,7 +36,7 @@ export const removeTagMenu = new Menu<SessionContext>('removeTagMenu')
                         const removeTag = await deleteTag(groupId, ctx.match);
 
                         if (!removeTag) {
-                            console.error('Error: Tag is not removed');
+                            LOGGER.error('Error: Tag is not removed');
                             return;
                         }
                         ctx.reply(MSG.menu.text.tagRemoded);

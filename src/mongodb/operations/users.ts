@@ -1,4 +1,5 @@
 import { ROLES } from '../../constants/global.js';
+import { LOGGER } from '../../logger/index.js';
 import { IUser, UserModel } from '../schemas/user.js';
 
 export const addUser = async ({
@@ -13,7 +14,7 @@ export const addUser = async ({
     try {
         const user = await getUserById(userId);
         if (user) {
-            console.log(`[addUser][info] User already exists: ${userId}`);
+            LOGGER.info(`[addUser][info] User already exists: ${userId}`);
             return null;
         }
 
@@ -27,16 +28,16 @@ export const addUser = async ({
         const savedUser = await newUser.save();
 
         if (savedUser?.id) {
-            console.log('[addUser][success]', { metadata: { savedUser } });
+            LOGGER.info('[addUser][success]', { metadata: { savedUser } });
         } else {
-            console.error('[addUser][error]', {
+            LOGGER.error('[addUser][error]', {
                 metadata: { error: 'User not saved' },
             });
         }
 
         return savedUser;
     } catch (error: any) {
-        console.error('[addUser][error]', {
+        LOGGER.error('[addUser][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -56,7 +57,7 @@ export const addUsers = async (users: IUser[]): Promise<IUser[] | null> => {
 
         return addedUsers.length > 0 ? addedUsers : null;
     } catch (error: any) {
-        console.error('[addUsers][error]', {
+        LOGGER.error('[addUsers][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -72,7 +73,7 @@ export const getUserById = async (id: number): Promise<IUser | null> => {
             return null;
         }
     } catch (error: any) {
-        console.error('[getUserById][error]', {
+        LOGGER.error('[getUserById][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -88,7 +89,7 @@ export const getUsersByIds = async (ids: number[]): Promise<IUser[] | null> => {
             return null;
         }
     } catch (error: any) {
-        console.error('[getUsersByIds][error]', {
+        LOGGER.error('[getUsersByIds][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -105,7 +106,7 @@ export const getAllUsers = async (
 
         return users;
     } catch (error: any) {
-        console.error('[getAllUsers][error]', {
+        LOGGER.error('[getAllUsers][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -118,7 +119,7 @@ export const getAllAdminRoles = async (): Promise<IUser[] | null> => {
 
         return users;
     } catch (error: any) {
-        console.error('[getAllAdminRoles][error]', {
+        LOGGER.error('[getAllAdminRoles][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -131,7 +132,7 @@ export const getAllUserRoles = async (): Promise<IUser[] | null> => {
 
         return users;
     } catch (error: any) {
-        console.error('[getAllUserRoles][error]', {
+        LOGGER.error('[getAllUserRoles][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -153,13 +154,13 @@ export const updateUsersToAdmin = async (
             }).exec();
             return users;
         } else {
-            console.error('[updateUsersToAdmin][error]', {
+            LOGGER.error('[updateUsersToAdmin][error]', {
                 metadata: { error: 'No users updated' },
             });
             return null;
         }
     } catch (error: any) {
-        console.error('[updateUsersToAdmin][error]', {
+        LOGGER.error('[updateUsersToAdmin][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -181,13 +182,13 @@ export const updateUsersToUser = async (
             }).exec();
             return users;
         } else {
-            console.error('[updateUsersToUser][error]', {
+            LOGGER.error('[updateUsersToUser][error]', {
                 metadata: { error: 'No users updated' },
             });
             return null;
         }
     } catch (error: any) {
-        console.error('[updateUsersToUser][error]', {
+        LOGGER.error('[updateUsersToUser][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;

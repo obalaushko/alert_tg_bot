@@ -1,4 +1,9 @@
-import { ROLES, USER_LIST } from '../../../constants/global.js';
+import {
+    LOOGER_GROUP_ID,
+    ROLES,
+    USER_LIST,
+} from '../../../constants/global.js';
+import { LOGGER } from '../../../logger/index.js';
 import { addGroup } from '../../../mongodb/operations/groups.js';
 import { addUser, addUsers } from '../../../mongodb/operations/users.js';
 import { bot, groupChat } from '../../bot.js';
@@ -9,20 +14,23 @@ export const joinBotToTGGroup = () => {
         try {
             const botInfo = await bot.api.getMe();
             const chatInfo = await ctx.getChat();
-            console.log('Chat info', chatInfo);
+            LOGGER.info('Chat info', { metadata: chatInfo });
 
-            console.log('Bot info', botInfo);
+            LOGGER.info('Bot info', { metadata: botInfo });
+
+            // Ckeck if group is LOOGER_GROUP
+            if (chatInfo.id === LOOGER_GROUP_ID) return;
 
             // find user with ADMIN_ID
             try {
                 const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
                 const adminUser = await ctx.getChatMember(ADMIN_ID);
 
-                console.log('Admin user info', adminUser);
+                LOGGER.info('Admin user info', { metadata: adminUser });
 
                 // const mockData = ctx.session.userList; // !
                 const mockData = USER_LIST.userList; // !
-                console.log('MOCK DATA', mockData);
+                LOGGER.info('MOCK DATA', { metadata: mockData });
 
                 if (
                     ['member', 'creator', 'administrator'].includes(
@@ -67,22 +75,23 @@ export const joinBotToTGGroup = () => {
                                 botInfo.id
                             );
                         }
-                        console.log('Bot leave the group!');
+                        LOGGER.info('Bot leave the group!');
                         if (mockData.users.length > 0) {
-                            console.error(
-                                'Error: User list is empty',
-                                mockData.users
-                            );
+                            LOGGER.error('Error: User list is empty', {
+                                metadata: mockData.users,
+                            });
                         }
                     } catch (err) {
-                        console.error('Error remove bot', err);
+                        LOGGER.error('Error remove bot', { metadata: err });
                     }
                 }
             } catch (err) {
-                console.error('Error find admin', err);
+                LOGGER.error('Error find admin', { metadata: err });
             }
         } catch (err) {
-            console.error('Error in message:new_chat_members:is_bot', err);
+            LOGGER.error('Error in message:new_chat_members:is_bot', {
+                metadata: err,
+            });
         }
     });
 };

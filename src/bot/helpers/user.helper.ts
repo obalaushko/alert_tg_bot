@@ -1,3 +1,4 @@
+import { LOGGER } from '../../logger/index.js';
 import { getGroupById } from '../../mongodb/operations/groups.js';
 import { IUser } from '../../mongodb/schemas/user.js';
 import { bot } from '../bot.js';
@@ -9,7 +10,7 @@ export async function findUserInGroup(
 ) {
     const users: IUser[] = [];
     try {
-        const group = await getGroupById(groupId);
+        const group = await getGroupById(groupId); // TODO
         for (const idOrUsername of idsOrUsernames) {
             try {
                 const user = await bot.api.getChat(idOrUsername);
@@ -27,11 +28,13 @@ export async function findUserInGroup(
                     }
                 }
             } catch (error) {
-                console.error(`Failed to get user ${idOrUsername}: `, error);
+                LOGGER.error(`Failed to get user ${idOrUsername}: `, {
+                    metadata: error,
+                });
             }
         }
         return users;
     } catch (err) {
-        console.error('Failed to get group', err);
+        LOGGER.error('Failed to get group', { metadata: err });
     }
 }

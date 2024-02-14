@@ -6,6 +6,7 @@ import {
     updateUsersToAdmin,
     updateUsersToUser,
 } from '../../mongodb/operations/users.js';
+import { LOGGER } from '../../logger/index.js';
 
 const checked = new Set<number>();
 
@@ -44,7 +45,7 @@ const addAdminMenu = new Menu('addAdminMenu')
 
                     checked.clear();
                     if (updateUsers?.length) {
-                        console.log('Update Users', updateUsers);
+                        LOGGER.info('Update Users', { metadata: updateUsers });
                     }
                     ctx.menu.back();
                 });
@@ -95,7 +96,7 @@ const removeAdminMenu = new Menu('removeAdminMenu')
 
                     checked.clear();
                     if (updateUsers?.length) {
-                        console.log('Update Users', updateUsers);
+                        LOGGER.info('Update Users', { metadata: updateUsers });
                     }
                     ctx.menu.back();
                 });
@@ -124,7 +125,7 @@ export const setupAdminMenu = new Menu('setupAdminMenu')
             ctx.menu.nav('addAdminMenu');
             await ctx.editMessageText(MSG.menu.text.addAdmin);
         } catch (err) {
-            console.error('Error addAdmin', err);
+            LOGGER.error('Error addAdmin', { metadata: err });
         }
     })
     .text(MSG.menu.buttons.removeAdmin, async (ctx) => {
@@ -135,7 +136,7 @@ export const setupAdminMenu = new Menu('setupAdminMenu')
             ctx.menu.nav('removeAdminMenu');
             await ctx.editMessageText(MSG.menu.text.removeAdmin);
         } catch (err) {
-            console.error('Error removeAdmin', err);
+            LOGGER.error('Error removeAdmin', { metadata: err });
         }
     })
     .row()
