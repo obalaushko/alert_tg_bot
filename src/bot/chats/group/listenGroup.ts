@@ -1,4 +1,5 @@
 import { ROLES } from '../../../constants/global.js';
+import { LOGGER } from '../../../logger/index.js';
 import {
     getAllGroups,
     updateGroup,
@@ -37,16 +38,16 @@ export const listenGroup = async () => {
                     }
                 }
             } catch (err) {
-                console.error(err);
+                LOGGER.error({ metadata: err });
                 return false;
             }
         },
         async (ctx: BotContext) => {
             const groups = await getAllGroups();
             const uniqueUsers = new Set<string>();
-            if (!groups) return console.error('Error: Groups are not defined');
+            if (!groups) return LOGGER.error('Error: Groups are not defined');
             const message = ctx.msg?.text || ctx.message?.text;
-            if (!message) return console.error('Error: Message is not defined');
+            if (!message) return LOGGER.error('Error: Message is not defined');
             const tagsMatch = message.match(/#\w+/g);
 
             const messageId = ctx.message?.message_id || ctx.msg?.message_id;
@@ -78,13 +79,15 @@ export const listenGroup = async () => {
                         reply_to_message_id: messageId,
                     });
                 } catch (err) {
-                    console.error('Error: Send message to the group', err);
+                    LOGGER.error('Error: Send message to the group', {
+                        metadata: err,
+                    });
                 }
             }
         }
     );
     groupChat.on('message:migrate_to_chat_id', async (ctx) => {
-        console.log('Update Group after migration to supergroup')
+        LOGGER.info('Update Group after migration to supergroup');
         const group = await ctx.getChat();
 
         const newGroupId = ctx.message.migrate_to_chat_id;

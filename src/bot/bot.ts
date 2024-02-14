@@ -32,6 +32,7 @@ import { removeBotFromChat } from './chats/group/removeBotFromChat.js';
 import { loadUsers } from './chats/private/loadUsers.js';
 import { loadUsersConversations } from './conversations/loadUsers.conversations.js';
 import { greetingsInGroup } from './chats/group/greetingsInGroup.js';
+import { LOGGER } from '../logger/index.js';
 
 dotenv.config();
 
@@ -136,24 +137,24 @@ listenGroup();
 //CRASH HANDLER
 bot.catch((err) => {
     const ctx = err.ctx;
-    console.error(
+    LOGGER.error(
         `[bot-catch][Error while handling update ${ctx.update.update_id}]`,
         { metadata: err.error }
     );
     const e = err.error;
 
     if (e instanceof GrammyError) {
-        console.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
+        LOGGER.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
             metadata: e.message,
             stack: e.stack,
         });
     } else if (e instanceof HttpError) {
-        console.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
+        LOGGER.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
             metadata: e.error,
             stack: e.stack,
         });
     } else {
-        console.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
+        LOGGER.error(`[bot-catch][Error in request ${ctx.update.update_id}]`, {
             metadata: e,
         });
     }

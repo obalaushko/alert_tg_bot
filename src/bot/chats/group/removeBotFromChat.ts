@@ -1,3 +1,4 @@
+import { LOGGER } from '../../../logger/index.js';
 import { deleteGroup } from '../../../mongodb/operations/groups.js';
 import { bot, groupChat } from '../../bot.js';
 
@@ -22,11 +23,13 @@ export const removeBotFromChat = async () => {
                     }
                     await deleteGroup(chatInfo.id);
                 } catch (err) {
-                    console.error('[removeBotFromChat][error]', err);
+                    LOGGER.error('[removeBotFromChat][error]', {
+                        metadata: err,
+                    });
                 }
             }
         } catch (err) {
-            console.error('Error remove bot', err);
+            LOGGER.error('Error remove bot', { metadata: err });
         }
     });
 };

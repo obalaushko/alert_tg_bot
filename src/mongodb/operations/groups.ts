@@ -1,3 +1,4 @@
+import { LOGGER } from '../../logger/index.js';
 import { IGroup, GroupModel, ITag } from '../schemas/group.js';
 import { IUser, UserModel } from '../schemas/user.js';
 
@@ -21,16 +22,16 @@ export const addGroup = async ({
         const savedGroup = await newGroup.save();
 
         if (savedGroup?.id) {
-            console.log('[addGroup][success]', { metadata: { savedGroup } });
+            LOGGER.info('[addGroup][success]', { metadata: { savedGroup } });
         } else {
-            console.error('[addGroup][error]', {
+            LOGGER.error('[addGroup][error]', {
                 metadata: { error: 'Group not saved' },
             });
         }
 
         return savedGroup;
     } catch (error: any) {
-        console.error('[addGroup][error]', {
+        LOGGER.error('[addGroup][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -46,7 +47,7 @@ export const getGroupById = async (id: number): Promise<IGroup | null> => {
             return null;
         }
     } catch (error: any) {
-        console.error('[getGroupById][error]', {
+        LOGGER.error('[getGroupById][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -74,14 +75,14 @@ export const updateGroup = async ({
         ).exec();
 
         if (group) {
-            console.log('[updateGroup][success]', { metadata: { group } });
+            LOGGER.info('[updateGroup][success]', { metadata: { group } });
             return group;
         } else {
-            console.error(`[updateGroup][error]: Group with ${id} not found`);
+            LOGGER.error(`[updateGroup][error]: Group with ${id} not found`);
             return null;
         }
     } catch (error: any) {
-        console.error('[updateGroup][error]', {
+        LOGGER.error('[updateGroup][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -94,7 +95,7 @@ export const getAllGroups = async (): Promise<IGroup[] | null> => {
 
         return groups;
     } catch (error: any) {
-        console.error('[getAllGroups][error]', {
+        LOGGER.error('[getAllGroups][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
@@ -113,7 +114,7 @@ export const addTagToGroup = async ({
     try {
         const group = await GroupModel.findOne({ groupId });
         if (!group) {
-            console.error('[addTagToGroup][error]', {
+            LOGGER.error('[addTagToGroup][error]', {
                 metadata: { error: 'Group not found' },
             });
             return null;
@@ -121,7 +122,7 @@ export const addTagToGroup = async ({
 
         // Перевірка на валідність тегу
         if (!/^[\p{L}\d]{3,20}$/u.test(tag)) {
-            console.error('[addTagToGroup][error]', {
+            LOGGER.error('[addTagToGroup][error]', {
                 metadata: { error: 'Invalid tag' },
             });
             return null;
@@ -132,18 +133,18 @@ export const addTagToGroup = async ({
 
         if (savedGroup?.id && savedGroup.tags) {
             const newTag = savedGroup.tags[savedGroup.tags.length - 1];
-            console.log('[addTagToGroup][success]', {
+            LOGGER.info('[addTagToGroup][success]', {
                 metadata: { newTag },
             });
             return newTag;
         } else {
-            console.error('[addTagToGroup][error]', {
+            LOGGER.error('[addTagToGroup][error]', {
                 metadata: { error: 'Group not updated' },
             });
             return null;
         }
     } catch (error: any) {
-        console.error('[addTagToGroup][error]', {
+        LOGGER.error('[addTagToGroup][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -165,7 +166,7 @@ export const addMembersToTag = async ({
         });
 
         if (!group || !group.tags) {
-            console.error('[addMembersToTag][error]', {
+            LOGGER.error('[addMembersToTag][error]', {
                 metadata: { error: 'Group not found or no tags in the group' },
             });
             return null;
@@ -174,7 +175,7 @@ export const addMembersToTag = async ({
         const tagIndex = group.tags.findIndex((tag) => tag.id === tagId);
 
         if (tagIndex === -1) {
-            console.error('[addMembersToTag][error]', {
+            LOGGER.error('[addMembersToTag][error]', {
                 metadata: { error: 'Tag not found in the group' },
             });
             return null;
@@ -189,7 +190,7 @@ export const addMembersToTag = async ({
         );
 
         if (duplicateMembers.length > 0) {
-            console.error('[addMembersToTag][error]', {
+            LOGGER.error('[addMembersToTag][error]', {
                 metadata: {
                     error: 'Duplicate members found',
                     duplicateMembers,
@@ -208,7 +209,7 @@ export const addMembersToTag = async ({
 
         await GroupModel.updateOne({ groupId }, update, { upsert: true });
 
-        console.log('[addMembersToTag][success]', {
+        LOGGER.info('[addMembersToTag][success]', {
             metadata: { groupId, tagId, newMembers },
         });
 
@@ -220,7 +221,7 @@ export const addMembersToTag = async ({
 
         return updatedTag;
     } catch (error: any) {
-        console.error('[addMembersToTag][error]', {
+        LOGGER.error('[addMembersToTag][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -239,14 +240,14 @@ export const removeUsersFromTag = async ({
     try {
         const group = await GroupModel.findOne({ groupId });
         if (!group) {
-            console.error('[removeUsersFromTag][error]', {
+            LOGGER.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'Group not found' },
             });
             return null;
         }
 
         if (!group.tags) {
-            console.error('[removeUsersFromTag][error]', {
+            LOGGER.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'No tags in the group' },
             });
             return null;
@@ -254,14 +255,14 @@ export const removeUsersFromTag = async ({
 
         const tag = group.tags.find((tag) => tag.id === tagId);
         if (!tag) {
-            console.error('[removeUsersFromTag][error]', {
+            LOGGER.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'Tag not found' },
             });
             return null;
         }
 
         if (!tag.members) {
-            console.error('[removeUsersFromTag][error]', {
+            LOGGER.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'No members in the tag' },
             });
             return null;
@@ -274,18 +275,18 @@ export const removeUsersFromTag = async ({
         const updatedGroup = await group.save();
 
         if (updatedGroup) {
-            console.log('[removeUsersFromTag][success]', {
+            LOGGER.info('[removeUsersFromTag][success]', {
                 metadata: { updatedGroup },
             });
             return updatedGroup;
         } else {
-            console.error('[removeUsersFromTag][error]', {
+            LOGGER.error('[removeUsersFromTag][error]', {
                 metadata: { error: 'Group not updated' },
             });
             return null;
         }
     } catch (error: any) {
-        console.error('[removeUsersFromTag][error]', {
+        LOGGER.error('[removeUsersFromTag][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -299,7 +300,7 @@ export const findAllTagsInGroup = async (
         const group = await GroupModel.findOne({ groupId });
 
         if (!group || !group.tags) {
-            console.error('[findAllTagsInGroup][error]', {
+            LOGGER.error('[findAllTagsInGroup][error]', {
                 metadata: { error: 'Group not found or no tags in the group' },
             });
             return null;
@@ -311,13 +312,13 @@ export const findAllTagsInGroup = async (
             tag: item?.tag || '',
         }));
 
-        console.log('[findAllTagsInGroup][success]', {
+        LOGGER.info('[findAllTagsInGroup][success]', {
             metadata: { groupId, tags },
         });
 
         return tags;
     } catch (error: any) {
-        console.error('[findAllTagsInGroup][error]', {
+        LOGGER.error('[findAllTagsInGroup][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -332,7 +333,7 @@ export const findTagInGroup = async (
         const group = await GroupModel.findOne({ groupId });
 
         if (!group || !group.tags) {
-            console.error('[findTagInGroup][error]', {
+            LOGGER.error('[findTagInGroup][error]', {
                 metadata: { error: 'Group not found or no tags in the group' },
             });
             return null;
@@ -341,7 +342,7 @@ export const findTagInGroup = async (
         const tag = group.tags.find((item) => item.id === tagId);
 
         if (!tag) {
-            console.error('[findTagInGroup][error]', {
+            LOGGER.error('[findTagInGroup][error]', {
                 metadata: { error: 'Tag not found in the group' },
             });
             return null;
@@ -356,13 +357,13 @@ export const findTagInGroup = async (
             memberCount: members ? members.length : 0,
         };
 
-        console.log('[findTagInGroup][success]', {
+        LOGGER.info('[findTagInGroup][success]', {
             metadata: { groupId, tagId, result },
         });
 
         return result;
     } catch (error: any) {
-        console.error('[findTagInGroup][error]', {
+        LOGGER.error('[findTagInGroup][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -377,7 +378,7 @@ export const deleteTag = async (
         const group = await GroupModel.findOne({ groupId });
 
         if (!group || !group.tags) {
-            console.error('[deleteTag][error]', {
+            LOGGER.error('[deleteTag][error]', {
                 metadata: { error: 'Group not found or no tags in the group' },
             });
             return false;
@@ -386,7 +387,7 @@ export const deleteTag = async (
         const tagIndex = group.tags.findIndex((tag) => tag.id === tagId);
 
         if (tagIndex === -1) {
-            console.error('[deleteTag][error]', {
+            LOGGER.error('[deleteTag][error]', {
                 metadata: { error: 'Tag not found in the group' },
             });
             return false;
@@ -395,13 +396,13 @@ export const deleteTag = async (
         group.tags.splice(tagIndex, 1);
         await group.save();
 
-        console.log('[deleteTag][success]', {
+        LOGGER.info('[deleteTag][success]', {
             metadata: { groupId, tagId },
         });
 
         return true;
     } catch (error: any) {
-        console.error('[deleteTag][error]', {
+        LOGGER.error('[deleteTag][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return false;
@@ -425,7 +426,7 @@ export const editTag = async ({
         const group = await GroupModel.findOne({ groupId });
 
         if (!group || !group.tags) {
-            console.error('[editTag][error]', {
+            LOGGER.error('[editTag][error]', {
                 metadata: { error: 'Group not found or no tags in the group' },
             });
             return null;
@@ -434,7 +435,7 @@ export const editTag = async ({
         const tag = group.tags.find((tag) => tag.id === tagId);
 
         if (!tag) {
-            console.error('[editTag][error]', {
+            LOGGER.error('[editTag][error]', {
                 metadata: { error: 'Tag not found in the group' },
             });
             return null;
@@ -444,13 +445,13 @@ export const editTag = async ({
         tag.tag = `#${newTag}`;
         await group.save();
 
-        console.log('[editTag][success]', {
+        LOGGER.info('[editTag][success]', {
             metadata: { groupId, tagId, newTitle, newTag },
         });
 
         return tag;
     } catch (error: any) {
-        console.error('[editTag][error]', {
+        LOGGER.error('[editTag][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return null;
@@ -462,7 +463,7 @@ export const deleteGroup = async (groupId: number): Promise<boolean> => {
         const group = await GroupModel.findOne({ groupId });
 
         if (!group) {
-            console.error('[deleteGroup][error]', {
+            LOGGER.error('[deleteGroup][error]', {
                 metadata: { error: 'Group not found' },
             });
             return false;
@@ -470,13 +471,13 @@ export const deleteGroup = async (groupId: number): Promise<boolean> => {
 
         await GroupModel.deleteOne({ groupId });
 
-        console.log('[deleteGroup][success]', {
+        LOGGER.info('[deleteGroup][success]', {
             metadata: { groupId },
         });
 
         return true;
     } catch (error: any) {
-        console.error('[deleteGroup][error]', {
+        LOGGER.error('[deleteGroup][error]', {
             metadata: { error: error, stack: error.stack?.toString() },
         });
         return false;

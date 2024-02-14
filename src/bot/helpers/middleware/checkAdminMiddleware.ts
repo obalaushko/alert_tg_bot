@@ -1,4 +1,5 @@
 import { Context, Middleware } from 'grammy';
+import { LOGGER } from '../../../logger/index.js';
 
 export const adminCheck: Middleware<Context> = async (ctx, next) => {
     const {
@@ -12,9 +13,11 @@ export const adminCheck: Middleware<Context> = async (ctx, next) => {
         if (adminUser.user.id === id) {
             await next();
         } else {
-            console.log('User trying to talk with bot', first_name);
+            LOGGER.info('User trying to talk with bot', {
+                metadata: first_name,
+            });
         }
     } catch (err) {
-        console.error(err);
+        LOGGER.error({ metadata: err });
     }
 };

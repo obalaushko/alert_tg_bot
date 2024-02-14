@@ -6,6 +6,7 @@ import { addUsersToTagMenu } from './addUsersToTag.menu.js';
 import { showTagsInGroupMenu } from './chooseTag.menu.js';
 import { removeUsersFromTagMenu } from './removeUserFromTag.menu.js';
 import { removeTagMenu } from './removeTag.menu.js';
+import { LOGGER } from '../../logger/index.js';
 
 export const mainMenu = new Menu('mainMenu')
     .text(MSG.menu.buttons.setupAdmins, async (ctx) => {
@@ -16,7 +17,7 @@ export const mainMenu = new Menu('mainMenu')
             ctx.menu.nav('setupAdminMenu');
             await ctx.editMessageText(MSG.menu.text.setupAdmin);
         } catch (err) {
-            console.error('Error setupAdmins', err);
+            LOGGER.error('Error setupAdmins', { metadata: err });
         }
     })
     .text(MSG.menu.buttons.setupTags, async (ctx) => {
@@ -27,7 +28,7 @@ export const mainMenu = new Menu('mainMenu')
             ctx.menu.nav('setupTagMenu');
             await ctx.editMessageText(MSG.menu.text.chooseGroupToUpdate);
         } catch (err) {
-            console.error('Error setupTags', err);
+            LOGGER.error('Error setupTags', { metadata: err });
         }
     });
 

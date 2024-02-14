@@ -3,6 +3,7 @@ import { MSG } from '../../constants/messages.js';
 import { getAllGroups, getGroupById } from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
 import { setupTagKeyboard } from './keyboards.js';
+import { LOGGER } from '../../logger/index.js';
 
 export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
     .dynamic(async () => {
@@ -24,9 +25,7 @@ export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
                             );
                             const groupInfo = await getGroupById(group.groupId);
                             if (!groupInfo) {
-                                console.error(
-                                    'Error: GroupInfo is not defined'
-                                );
+                                LOGGER.error('Error: GroupInfo is not defined');
                                 return;
                             }
 
@@ -40,7 +39,7 @@ export const setupTagMenu = new Menu<SessionContext>('setupTagMenu')
             }
             return range;
         } catch (err) {
-            console.error('Error in setupTagMenu', err);
+            LOGGER.error('Error in setupTagMenu', { metadata: err });
         }
     })
     .row()

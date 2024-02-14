@@ -7,6 +7,7 @@ import {
 } from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
 import { UserModel } from '../../mongodb/schemas/user.js';
+import { LOGGER } from '../../logger/index.js';
 
 const checked = new Set<number>();
 
@@ -21,13 +22,13 @@ export const removeUsersFromTagMenu = new Menu<SessionContext>(
         const groupId = ctx.session.activeGroupId;
         const tagId = ctx.session.activeTagId;
         if (!groupId || !tagId) {
-            console.error('Error: GroupId or TagId is not defined');
+            LOGGER.error('Error: GroupId or TagId is not defined');
             return new MenuRange<SessionContext>();
         }
 
         const tag = await findTagInGroup(groupId, tagId);
         if (!tag) {
-            console.error('Error: Tag is not defined');
+            LOGGER.error('Error: Tag is not defined');
             return new MenuRange<SessionContext>();
         }
         const users = await UserModel.find({ _id: { $in: tag.members } });
@@ -59,7 +60,7 @@ export const removeUsersFromTagMenu = new Menu<SessionContext>(
                     if (!users) return;
 
                     if (!groupId || !tagId) {
-                        console.error('Error: GroupId or TagId is not defined');
+                        LOGGER.error('Error: GroupId or TagId is not defined');
                         return;
                     }
 
@@ -71,7 +72,9 @@ export const removeUsersFromTagMenu = new Menu<SessionContext>(
 
                     checked.clear();
                     if (membersToTag) {
-                        console.log('Remove members from tag', membersToTag);
+                        LOGGER.info('Remove members from tag', {
+                            metadata: membersToTag,
+                        });
                     }
                     ctx.menu.nav('mainMenu');
                     await ctx.editMessageText(MSG.menu.text.start);

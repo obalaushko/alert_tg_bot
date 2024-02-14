@@ -1,4 +1,5 @@
 import { MSG } from '../../constants/messages.js';
+import { LOGGER } from '../../logger/index.js';
 import { addTagToGroup } from '../../mongodb/operations/groups.js';
 import { setupTagKeyboard } from '../menu/keyboards.js';
 import { BotContext, ConverstaionContext } from '../types/index.js';
@@ -9,7 +10,7 @@ export const createTagConversations = async (
     ctx: BotContext
 ) => {
     const { user } = await ctx.getAuthor();
-    console.log('[createTagConversations]', user);
+    LOGGER.info('[createTagConversations]', { metadata: user });
 
     await ctx.reply(MSG.conversations.chooseTagTitle, {
         reply_markup: { remove_keyboard: true },
@@ -20,7 +21,7 @@ export const createTagConversations = async (
     if (isCancel(title || '')) {
         await ctx.reply(MSG.conversations.leaveConversation);
         // await ctx.conversation.exit();
-        console.log(`[createTagConversations] Leave the conversation`);
+        LOGGER.info(`[createTagConversations] Leave the conversation`);
         return;
     }
 
@@ -35,7 +36,7 @@ export const createTagConversations = async (
         if (isCancel(tag || '')) {
             await ctx.reply(MSG.conversations.leaveConversation);
             // await ctx.conversation.exit();
-            console.log(`[createTagConversations] Leave the conversation`);
+            LOGGER.info(`[createTagConversations] Leave the conversation`);
             return;
         }
 
@@ -53,7 +54,7 @@ export const createTagConversations = async (
         }
     }
 
-    console.log(`[createTagConversations] Tag title: ${title}, Tag: ${tag}`);
+    LOGGER.info(`[createTagConversations] Tag title: ${title}, Tag: ${tag}`);
 
     // Add tag to DB
     const addTag = await conversation.external(async () => {
@@ -66,7 +67,7 @@ export const createTagConversations = async (
 
             return newTag;
         } else {
-            console.error('Error activeGroupId not found!');
+            LOGGER.error('Error activeGroupId not found!');
         }
     });
 

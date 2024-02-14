@@ -1,4 +1,5 @@
 import { MSG } from '../../../constants/messages.js';
+import { LOGGER } from '../../../logger/index.js';
 import { mainMenu } from '../../menu/start.menu.js';
 import { BotContext } from '../../types/index.js';
 
@@ -19,9 +20,11 @@ export const startBotDialog = async (ctx: BotContext) => {
             });
         } else {
             await ctx.reply(MSG.errors.accessDenied);
-            console.log('User trying to talk with bot', first_name);
+            LOGGER.info('User trying to talk with bot', {
+                metadata: first_name,
+            });
         }
     } catch (err) {
-        console.error(err);
+        LOGGER.error({ metadata: err });
     }
 };

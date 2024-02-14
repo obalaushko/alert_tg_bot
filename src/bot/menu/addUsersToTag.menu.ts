@@ -6,6 +6,7 @@ import {
     findTagInGroup,
 } from '../../mongodb/operations/groups.js';
 import { SessionContext } from '../types/index.js';
+import { LOGGER } from '../../logger/index.js';
 
 const checked = new Set<number>();
 
@@ -19,7 +20,7 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
         const tagId = ctx.session.activeTagId;
 
         if (!groupId || !tagId) {
-            console.error('Error: GroupId or TagId is not defined');
+            LOGGER.error('Error: GroupId or TagId is not defined');
             return;
         }
         const tagInfo = await findTagInGroup(groupId, tagId);
@@ -63,7 +64,9 @@ export const addUsersToTagMenu = new Menu<SessionContext>('addUsersToTagMenu')
 
                     checked.clear();
                     if (membersToTag) {
-                        console.log('Add members to tag', membersToTag);
+                        LOGGER.info('Add members to tag', {
+                            metadata: membersToTag,
+                        });
                     }
                     ctx.menu.nav('mainMenu');
                     await ctx.editMessageText(MSG.menu.text.start);

@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
+import { LOGGER } from '../logger/index.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
