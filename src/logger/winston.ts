@@ -29,7 +29,7 @@ const telegramTransport = new TelegramLogger({
     formatMessage: (info) => {
         try {
             return `<b>[${info.level}]</b> ${info.message}: <pre>${
-                info.metadata ? JSON.stringify(info.metadata) : ''
+                info.metadata ? JSON.stringify(info.metadata, null, 2) : ''
             }</pre>`;
         } catch (err) {
             console.error(`[error] ${err}`);
