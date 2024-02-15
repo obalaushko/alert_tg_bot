@@ -125,6 +125,8 @@ privateChat.command('cancel', async (ctx) => {
     await ctx.reply(MSG.conversations.leaveConversation);
 });
 
+// privateChat.command('showAllTags', async (ctx) => {}); // TODO: show all tags in group
+
 //REMOVE BOT FROM GROUP
 removeBotFromChat();
 
