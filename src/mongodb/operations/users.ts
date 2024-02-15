@@ -14,7 +14,7 @@ export const addUser = async ({
     try {
         const user = await getUserById(userId);
         if (user) {
-            LOGGER.info(`[addUser][info] User already exists: ${userId}`);
+            LOGGER.warn(`[addUser][info] User already exists: ${userId}`);
             return null;
         }
 
@@ -189,6 +189,33 @@ export const updateUsersToUser = async (
         }
     } catch (error: any) {
         LOGGER.error('[updateUsersToUser][error]', {
+            metadata: { error: error, stack: error.stack.toString() },
+        });
+        return null;
+    }
+};
+
+export const deleteUsers = async (
+    userIds: number | number[]
+): Promise<number[] | null> => {
+    try {
+        // Ensure userIds is an array
+        userIds = Array.isArray(userIds) ? userIds : [userIds];
+
+        const result = await UserModel.deleteMany({
+            userId: { $in: userIds },
+        }).exec();
+
+        if (result && result.deletedCount > 0) {
+            return userIds;
+        } else {
+            LOGGER.error('[deleteUsers][error]', {
+                metadata: { error: 'No users deleted', list: userIds },
+            });
+            return null;
+        }
+    } catch (error: any) {
+        LOGGER.error('[deleteUsers][error]', {
             metadata: { error: error, stack: error.stack.toString() },
         });
         return null;
