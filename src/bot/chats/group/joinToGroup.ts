@@ -9,13 +9,13 @@ import {
     addUser,
     addUsers,
 } from '../../../mongodb/operations/users.js';
-import { groupChat } from '../../bot.js';
+import { bot, groupChat } from '../../bot.js';
 import { findUserInGroup } from '../../helpers/user.helper.js';
 
 export const joinBotToTGGroup = () => {
     groupChat.on(':new_chat_members:me', async (ctx) => {
         try {
-            const botInfo = await ctx.api.getMe();
+            const botInfo = await bot.api.getMe();
             const chatInfo = await ctx.getChat();
             LOGGER.info('Chat info', { metadata: chatInfo });
 
@@ -68,12 +68,12 @@ export const joinBotToTGGroup = () => {
                     // remove bot from group
                     try {
                         if (chatInfo.type === 'supergroup') {
-                            await ctx.api.unbanChatMember(
+                            await bot.api.unbanChatMember(
                                 chatInfo.id,
                                 botInfo.id
                             );
                         } else {
-                            await ctx.api.banChatMember(
+                            await bot.api.banChatMember(
                                 chatInfo.id,
                                 botInfo.id
                             );
@@ -98,7 +98,7 @@ export const joinBotToTGGroup = () => {
         }
     });
 
-    groupChat.on('chat_member', async (ctx) => {
+    groupChat.on('chat_member', async (ctx) => { // !Bot must be admin in the group
         const newMember = ctx.chatMember.new_chat_member;
         const chatInfo = await ctx.getChat();
         LOGGER.info('[chat_member]', newMember);
