@@ -5,14 +5,17 @@ import {
 } from '../../../constants/global.js';
 import { LOGGER } from '../../../logger/index.js';
 import { addGroup } from '../../../mongodb/operations/groups.js';
-import { addUser, addUsers } from '../../../mongodb/operations/users.js';
-import { bot, groupChat } from '../../bot.js';
+import {
+    addUser,
+    addUsers,
+} from '../../../mongodb/operations/users.js';
+import { groupChat } from '../../bot.js';
 import { findUserInGroup } from '../../helpers/user.helper.js';
 
 export const joinBotToTGGroup = () => {
-    groupChat.on('message:new_chat_members:is_bot', async (ctx) => {
+    groupChat.on(':new_chat_members:me', async (ctx) => {
         try {
-            const botInfo = await bot.api.getMe();
+            const botInfo = await ctx.api.getMe();
             const chatInfo = await ctx.getChat();
             LOGGER.info('Chat info', { metadata: chatInfo });
 
@@ -65,17 +68,17 @@ export const joinBotToTGGroup = () => {
                     // remove bot from group
                     try {
                         if (chatInfo.type === 'supergroup') {
-                            await bot.api.unbanChatMember(
+                            await ctx.api.unbanChatMember(
                                 chatInfo.id,
                                 botInfo.id
                             );
                         } else {
-                            await bot.api.banChatMember(
+                            await ctx.api.banChatMember(
                                 chatInfo.id,
                                 botInfo.id
                             );
                         }
-                        LOGGER.info('Bot leave the group!');
+                        LOGGER.warn('Bot leave the group!');
                         if (mockData.users.length > 0) {
                             LOGGER.error('Error: User list is empty', {
                                 metadata: mockData.users,
@@ -89,8 +92,30 @@ export const joinBotToTGGroup = () => {
                 LOGGER.error('Error find admin', { metadata: err });
             }
         } catch (err) {
-            LOGGER.error('Error in message:new_chat_members:is_bot', {
+            LOGGER.error('Error in message:new_chat_members:me', {
                 metadata: err,
+            });
+        }
+    });
+
+    groupChat.on('chat_member', async (ctx) => {
+        const newMember = ctx.chatMember.new_chat_member;
+        const chatInfo = await ctx.getChat();
+        LOGGER.info('[chat_member]', newMember);
+        if (newMember.status === 'kicked' || newMember.status === 'left') {
+            // remove user from DB
+            // Remove user from group wich user has been kicked
+            // await deleteUsers(newMember.user.id); // TODO: remove user from group
+            LOGGER.info('[chat_member] User has been kicked or left', {
+                metadata: { newMember, chatInfo },
+            });
+        } else if (newMember.status === 'member') {
+            // add user to DB
+            await addUser({
+                userId: newMember.user.id,
+                username: newMember.user.username,
+                firstName: newMember.user.first_name,
+                role: ROLES.User,
             });
         }
     });

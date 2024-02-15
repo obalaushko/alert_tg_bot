@@ -464,7 +464,7 @@ export const deleteGroup = async (groupId: number): Promise<boolean> => {
 
         if (!group) {
             LOGGER.error('[deleteGroup][error]', {
-                metadata: { error: 'Group not found' },
+                metadata: { error: `Group not found ${groupId}` },
             });
             return false;
         }

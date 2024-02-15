@@ -9,7 +9,7 @@ import { groupChat } from '../../bot.js';
 import { BotContext } from '../../types/index.js';
 
 export const listenGroup = async () => {
-    groupChat.on(['message:text', 'edit']).filter(
+    groupChat.on(['message::hashtag', 'edit::hashtag']).filter(
         async (ctx: BotContext) => {
             // ! Bot must be admin in the group
             try {
@@ -88,14 +88,17 @@ export const listenGroup = async () => {
             }
         }
     );
-    groupChat.on('message:migrate_to_chat_id', async (ctx) => {
-        LOGGER.info('Update Group after migration to supergroup');
-        const group = await ctx.getChat();
+    groupChat.on(':migrate_to_chat_id', async (ctx) => {
+        const { id } = await ctx.getChat();
 
         const newGroupId = ctx.message.migrate_to_chat_id;
 
+        LOGGER.info('Update Group after migration to supergroup', {
+            metadata: { oldGroupId: id, newGroupId: newGroupId },
+        });
+
         await updateGroup({
-            id: group.id,
+            id: id,
             newGroupId: newGroupId,
             newType: 'supergroup',
         });
