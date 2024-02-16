@@ -33,6 +33,7 @@ import { loadUsers } from './chats/private/loadUsers.js';
 import { loadUsersConversations } from './conversations/loadUsers.conversations.js';
 import { greetingsInGroup } from './chats/group/greetingsInGroup.js';
 import { LOGGER } from '../logger/index.js';
+import { showAllTags } from './chats/private/showAllTags.js';
 
 dotenv.config();
 
@@ -125,7 +126,9 @@ privateChat.command('cancel', async (ctx) => {
     await ctx.reply(MSG.conversations.leaveConversation);
 });
 
-// privateChat.command('showAllTags', async (ctx) => {}); // TODO: show all tags in group
+privateChat.command('alltags', async (ctx) => {
+    await showAllTags(ctx);
+}); // TODO: show all tags in group
 
 //REMOVE BOT FROM GROUP
 removeBotFromChat();
@@ -134,7 +137,6 @@ loadUsers();
 joinBotToTGGroup();
 tagsSetupHears();
 listenGroup();
-// simpleJoinBotToTGGroup();
 
 //CRASH HANDLER
 bot.catch((err) => {
