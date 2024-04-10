@@ -121,6 +121,14 @@ privateChat.command('start', async (ctx) => {
     await startBotDialog(ctx);
 });
 
+privateChat.command('greetings', async (ctx) => {
+    const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
+    const {user} = await ctx.getAuthor();
+    if (user.id === ADMIN_ID) {
+        greetingsInGroup()
+    }
+})
+
 privateChat.command('cancel', async (ctx) => {
     await ctx.conversation.exit();
     await ctx.reply(MSG.conversations.leaveConversation);
