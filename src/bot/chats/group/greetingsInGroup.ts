@@ -25,7 +25,11 @@ export const greetingsInGroup = async (groupId?: number) => {
 
         if (isWeekday) {
             // TMP group id
-            await bot.api.sendMessage(GROUP_ID, MSG.groups.greetings.static);
+            const greetings = MSG.groups.greetings.dynamic;
+
+            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+            await bot.api.sendMessage(GROUP_ID, randomGreeting);
 
             LOGGER.info('Greetings sent!');
         }
