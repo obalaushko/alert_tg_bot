@@ -104,7 +104,7 @@ bot.use(createConversation(loadUsersConversations));
 // Shedule
 // Greetings in group
 // 7:59 Monday to Friday (59 7 * * 1-5)
-cron.schedule('59 7 * * 1-5', () => greetingsInGroup());
+// cron.schedule('59 7 * * 1-5', () => greetingsInGroup({}));
 
 export const privateChat = bot.chatType('private');
 export const groupChat = bot.chatType(['group', 'supergroup']);
@@ -125,7 +125,9 @@ privateChat.command('greetings', async (ctx) => {
     const ADMIN_ID = Number(process.env.ADMIN_ID) || 0;
     const { user } = await ctx.getAuthor();
     if (user.id === ADMIN_ID) {
-        await greetingsInGroup();
+        const message = ctx.message?.text?.replace(/\/\w+\s*/, '');
+
+        await greetingsInGroup({ customMessage: message });
     }
 });
 
