@@ -12,7 +12,13 @@ import { LOGGER } from '../../../logger/index.js';
 
 dotenv.config();
 
-export const greetingsInGroup = async (groupId?: number) => {
+export const greetingsInGroup = async ({
+    groupId,
+    customMessage,
+}: {
+    groupId?: number;
+    customMessage?: string;
+}) => {
     try {
         const now = moment().tz('Europe/Kiev');
         const isWeekday = now.isoWeekday() < 6;
@@ -27,9 +33,10 @@ export const greetingsInGroup = async (groupId?: number) => {
             // TMP group id
             const greetings = MSG.groups.greetings.dynamic;
 
-            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+            const randomGreeting =
+                greetings[Math.floor(Math.random() * greetings.length)];
 
-            await bot.api.sendMessage(GROUP_ID, randomGreeting);
+            await bot.api.sendMessage(GROUP_ID, customMessage || randomGreeting);
 
             LOGGER.info('Greetings sent!');
         }
@@ -48,12 +55,12 @@ export const greetingsInGroup = async (groupId?: number) => {
                 });
 
                 if (update) {
-                    greetingsInGroup(newGroupId);
+                    greetingsInGroup({ groupId: newGroupId });
                 } else {
                     const group = await getGroupById(newGroupId);
 
                     if (group) {
-                        greetingsInGroup(group.groupId);
+                        greetingsInGroup({ groupId: group.groupId });
                     }
                 }
             }
