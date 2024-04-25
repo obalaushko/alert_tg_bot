@@ -20,7 +20,7 @@ const connectDb = async () => {
             retryWrites: true,
         });
         if (mongoDbConnection.connection.readyState === 1) {
-            LOGGER.info(`[connectDb][DB connected succesfully]`, {
+            console.log(`[connectDb][DB connected succesfully]`, {
                 metadata: '',
                 sendLog: true,
             });
